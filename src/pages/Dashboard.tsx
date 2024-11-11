@@ -46,21 +46,21 @@ export default function Dashboard() {
   if (isLoading) return <div>Carregando...</div>;
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <div className="flex gap-4">
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-4">
           <Button
             onClick={() => navigate("/subscriptions")}
             variant="outline"
-            className="flex items-center gap-2"
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
           >
             <Users className="h-4 w-4" />
             Visualizar Clientes
           </Button>
           <Button
             onClick={() => navigate("/home")}
-            className="flex items-center gap-2"
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
           >
             <PlusCircle className="h-4 w-4" />
             Cadastrar Cliente
@@ -68,8 +68,8 @@ export default function Dashboard() {
         </div>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total de Clientes
@@ -80,7 +80,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Clientes Inadimplentes
@@ -91,7 +91,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Vencimentos Hoje
@@ -102,7 +102,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Faturamento Mensal
