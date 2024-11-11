@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -40,6 +41,14 @@ const APP_OPTIONS = [
   "Eppi",
 ] as const;
 
+const COMBO_OPTIONS = [
+  "Eppi Redplay",
+  "Eppi Duna",
+  "Eppi TVE",
+  "Eppi Blue",
+  "Eppi pix",
+] as const;
+
 export function SubscriptionForm() {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,6 +57,8 @@ export function SubscriptionForm() {
       is_combo: false,
     },
   });
+
+  const isCombo = form.watch("is_combo");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -161,6 +172,51 @@ export function SubscriptionForm() {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="is_combo"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Combo?</FormLabel>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        {isCombo && (
+          <FormField
+            control={form.control}
+            name="combo_app"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>App Combo</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o combo" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {COMBO_OPTIONS.map((app) => (
+                      <SelectItem key={app} value={app}>
+                        {app}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <Button type="submit">Registrar Assinatura</Button>
       </form>
