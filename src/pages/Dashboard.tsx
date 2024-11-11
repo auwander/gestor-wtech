@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { format, isBefore, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, Users } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -56,7 +57,8 @@ export default function Dashboard() {
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
-        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-4">
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-4 items-center">
+          <ThemeToggle />
           <Button
             onClick={() => navigate("/subscriptions")}
             variant="outline"
