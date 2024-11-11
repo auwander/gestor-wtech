@@ -25,24 +25,55 @@ export function SubscriptionForm() {
     async function getUserCompany() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: profile, error } = await supabase
+        // First try to get the profile
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('company')
           .eq('id', user.id)
           .single();
-        
-        if (error) {
-          toast({
-            variant: "destructive",
-            title: "Erro ao carregar perfil",
-            description: "Por favor, faça login novamente.",
-          });
-          await supabase.auth.signOut();
-          navigate('/login');
-          return;
-        }
-        
-        if (profile) {
+
+        if (profileError) {
+          // If profile doesn't exist, try to create it with a default company
+          // You might want to adjust this logic based on your requirements
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert([
+              { id: user.id, company: user.email?.split('@')[0] || 'default-company' }
+            ]);
+
+          if (insertError) {
+            toast({
+              variant: "destructive",
+              title: "Erro ao criar perfil",
+              description: "Por favor, contate o suporte.",
+            });
+            await supabase.auth.signOut();
+            navigate('/login');
+            return;
+          }
+
+          // Try to get the profile again after creating it
+          const { data: newProfile, error: newProfileError } = await supabase
+            .from('profiles')
+            .select('company')
+            .eq('id', user.id)
+            .single();
+
+          if (newProfileError) {
+            toast({
+              variant: "destructive",
+              title: "Erro ao carregar perfil",
+              description: "Por favor, faça login novamente.",
+            });
+            await supabase.auth.signOut();
+            navigate('/login');
+            return;
+          }
+
+          if (newProfile) {
+            setUserCompany(newProfile.company);
+          }
+        } else if (profile) {
           setUserCompany(profile.company);
         }
       }
