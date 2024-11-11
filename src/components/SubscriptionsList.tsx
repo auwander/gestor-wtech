@@ -3,28 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format, isBefore, isToday } from "date-fns";
+import { isBefore, isToday } from "date-fns";
 import { Subscription } from "@/types/subscription";
-import { EditSubscriptionDialog } from "./subscription/EditSubscriptionDialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { SubscriptionRow } from "./subscription/SubscriptionRow";
+import { deleteSubscription } from "@/utils/supabaseOperations";
 
 interface SubscriptionsListProps {
   filter?: string | null;
@@ -75,75 +62,24 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
 
   const handleDelete = async (id: string) => {
     try {
-      // First check if the subscription exists
-      const { data: existingData, error: checkError } = await supabase
-        .from("client_subscriptions")
-        .select()
-        .eq("id", id);
-
-      if (checkError) {
-        console.error("Error checking subscription:", checkError);
-        toast({
-          variant: "destructive",
-          title: "Erro ao verificar assinatura",
-          description: checkError.message,
-        });
-        return;
-      }
-
-      if (!existingData || existingData.length === 0) {
-        toast({
-          variant: "destructive",
-          title: "Erro ao deletar assinatura",
-          description: "Assinatura não encontrada.",
-        });
-        return;
-      }
-
-      // If subscription exists, proceed with deletion
-      const { error: deleteError } = await supabase
-        .from("client_subscriptions")
-        .delete()
-        .eq("id", id);
-
-      if (deleteError) {
-        console.error("Supabase delete error:", deleteError);
-        toast({
-          variant: "destructive",
-          title: "Erro ao deletar assinatura",
-          description: deleteError.message,
-        });
-        return;
-      }
-
+      await deleteSubscription(id);
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-      
-      toast({
-        title: "Assinatura deletada com sucesso",
-      });
-    } catch (error) {
+      toast({ title: "Assinatura deletada com sucesso" });
+    } catch (error: any) {
       console.error("Error deleting subscription:", error);
       toast({
         variant: "destructive",
         title: "Erro ao deletar assinatura",
-        description: "Ocorreu um erro ao tentar deletar a assinatura.",
+        description: error.message || "Ocorreu um erro ao tentar deletar a assinatura.",
       });
     }
   };
 
-  const isOverdue = (dueDate: string) => {
-    return isBefore(new Date(dueDate), new Date());
-  };
-
-  const isDueToday = (dueDate: string) => {
-    return isToday(new Date(dueDate));
-  };
-
   const getRowClassName = (dueDate: string) => {
-    if (isOverdue(dueDate)) {
+    if (isBefore(new Date(dueDate), new Date())) {
       return "bg-red-100";
     }
-    if (isDueToday(dueDate)) {
+    if (isToday(new Date(dueDate))) {
       return "bg-blue-100";
     }
     return "bg-green-100";
@@ -167,57 +103,12 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         </TableHeader>
         <TableBody>
           {subscriptions?.map((subscription) => (
-            <TableRow 
+            <SubscriptionRow
               key={subscription.id}
+              subscription={subscription}
+              onDelete={handleDelete}
               className={getRowClassName(subscription.due_date)}
-            >
-              <TableCell>{subscription.name}</TableCell>
-              <TableCell>{subscription.phone}</TableCell>
-              <TableCell>{subscription.app}</TableCell>
-              <TableCell>R$ {subscription.amount.toFixed(2)}</TableCell>
-              <TableCell>
-                {format(new Date(subscription.due_date), "dd/MM/yyyy")}
-              </TableCell>
-              <TableCell>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    subscription.payment_status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {subscription.payment_status === "active"
-                    ? "Ativo"
-                    : "Inativo"}
-                </span>
-              </TableCell>
-              <TableCell className="flex items-center gap-2">
-                <EditSubscriptionDialog subscription={subscription} />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="icon">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Confirmar exclusão
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Tem certeza que deseja excluir a assinatura de {subscription.name}? Esta ação não pode ser desfeita.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(subscription.id)}>
-                        Confirmar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
-            </TableRow>
+            />
           ))}
         </TableBody>
       </Table>

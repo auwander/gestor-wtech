@@ -10,13 +10,13 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Subscription } from "@/types/subscription";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema } from "./schema";
 import { FormFields } from "./FormFields";
+import { updateSubscription } from "@/utils/supabaseOperations";
 import type { z } from "zod";
 
 interface EditSubscriptionDialogProps {
@@ -42,54 +42,15 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // First check if the subscription exists
-      const { data: existingData, error: checkError } = await supabase
-        .from("client_subscriptions")
-        .select()
-        .eq("id", subscription.id);
-
-      if (checkError) {
-        console.error("Error checking subscription:", checkError);
-        toast({
-          variant: "destructive",
-          title: "Erro ao verificar assinatura",
-          description: checkError.message,
-        });
-        return;
-      }
-
-      if (!existingData || existingData.length === 0) {
-        toast({
-          variant: "destructive",
-          title: "Erro ao atualizar assinatura",
-          description: "Assinatura não encontrada.",
-        });
-        return;
-      }
-
-      // If subscription exists, proceed with update
-      const { error: updateError } = await supabase
-        .from("client_subscriptions")
-        .update({
-          name: values.name,
-          phone: values.phone,
-          app: values.app,
-          amount: parseFloat(values.amount),
-          due_date: values.due_date,
-          is_combo: values.is_combo,
-          combo_app: values.is_combo ? "Eppi" : null,
-        })
-        .eq("id", subscription.id);
-
-      if (updateError) {
-        console.error("Supabase update error:", updateError);
-        toast({
-          variant: "destructive",
-          title: "Erro ao atualizar assinatura",
-          description: updateError.message,
-        });
-        return;
-      }
+      await updateSubscription(subscription.id, {
+        name: values.name,
+        phone: values.phone,
+        app: values.app,
+        amount: parseFloat(values.amount),
+        due_date: values.due_date,
+        is_combo: values.is_combo,
+        combo_app: values.is_combo ? "Eppi" : null,
+      });
 
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       
@@ -99,12 +60,12 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
       });
 
       setOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating subscription:", error);
       toast({
         variant: "destructive",
         title: "Erro ao atualizar assinatura",
-        description: "Tente novamente mais tarde.",
+        description: error.message || "Tente novamente mais tarde.",
       });
     }
   }
