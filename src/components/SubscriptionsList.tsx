@@ -46,12 +46,14 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       }
 
       const subscriptionsData = data as Subscription[];
+
+      // Criar uma data de referência (hoje) no fuso horário local, início do dia
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       const compareDates = (dateStr: string) => {
-        const date = parseISO(dateStr);
-        date.setHours(0, 0, 0, 0);
+        // Converter a string de data para objeto Date no fuso horário local
+        const date = new Date(dateStr + 'T00:00:00');
         return { 
           date, 
           isBeforeToday: isBefore(date, today), 
@@ -106,8 +108,8 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   };
 
   const compareDates = (dateStr: string) => {
-    const date = parseISO(dateStr);
-    date.setHours(0, 0, 0, 0);
+    // Converter a string de data para objeto Date no fuso horário local
+    const date = new Date(dateStr + 'T00:00:00');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return {
