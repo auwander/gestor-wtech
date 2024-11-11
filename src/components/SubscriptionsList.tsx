@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { isBefore, isEqual, parseISO } from "date-fns";
+import { isBefore, isEqual, parseISO, startOfDay } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionRow } from "./subscription/SubscriptionRow";
@@ -46,28 +46,17 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       }
 
       const subscriptionsData = data as Subscription[];
-      
-      // Log the dates for debugging
-      subscriptionsData.forEach(sub => {
-        console.log(`Subscription ${sub.name}:`, {
-          rawDueDate: sub.due_date,
-          parsedDate: parseISO(sub.due_date).toISOString(),
-        });
-      });
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Reset time to start of day
+      const today = startOfDay(new Date());
 
       switch (filter) {
         case 'inactive':
           return subscriptionsData.filter(sub => {
-            const dueDate = parseISO(sub.due_date);
+            const dueDate = startOfDay(parseISO(sub.due_date));
             return isBefore(dueDate, today) && sub.payment_status !== 'inactive';
           });
         case 'due-today':
           return subscriptionsData.filter(sub => {
-            const dueDate = parseISO(sub.due_date);
-            dueDate.setHours(0, 0, 0, 0); // Reset time to start of day
+            const dueDate = startOfDay(parseISO(sub.due_date));
             return isEqual(dueDate, today);
           });
         case 'all':
@@ -94,10 +83,8 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   };
 
   const getRowClassName = (dueDate: string) => {
-    const date = parseISO(dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to start of day
-    date.setHours(0, 0, 0, 0); // Reset time to start of day
+    const date = startOfDay(parseISO(dueDate));
+    const today = startOfDay(new Date());
     
     if (isBefore(date, today)) {
       return "bg-red-100";
