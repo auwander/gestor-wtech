@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { APP_OPTIONS } from "./schema";
 import { UseFormReturn } from "react-hook-form";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 
 interface FormFieldsProps {
   form: UseFormReturn<any>;
