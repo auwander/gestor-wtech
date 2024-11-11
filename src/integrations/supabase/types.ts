@@ -401,7 +401,26 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      subscription_statistics: {
+        Row: {
+          active_subscriptions: number | null
+          average_subscription_value: number | null
+          inactive_subscriptions: number | null
+          total_apps: number | null
+          total_revenue: number | null
+          total_subscriptions: number | null
+        }
+        Relationships: []
+      }
+      subscriptions_by_app: {
+        Row: {
+          active: number | null
+          app: string | null
+          revenue: number | null
+          total: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
