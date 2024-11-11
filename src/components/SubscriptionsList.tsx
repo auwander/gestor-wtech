@@ -24,9 +24,15 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   const { data: subscriptions, isLoading } = useQuery({
     queryKey: ["subscriptions", filter],
     queryFn: async () => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("company")
+        .single();
+
       let query = supabase
         .from("client_subscriptions")
         .select("*")
+        .eq("company", profile.company)
         .order("due_date", { ascending: true });
 
       const { data, error } = await query;
