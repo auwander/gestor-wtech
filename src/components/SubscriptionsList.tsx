@@ -91,6 +91,20 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
     return isBefore(new Date(dueDate), new Date());
   };
 
+  const isDueToday = (dueDate: string) => {
+    return isToday(new Date(dueDate));
+  };
+
+  const getRowClassName = (dueDate: string) => {
+    if (isOverdue(dueDate)) {
+      return "bg-red-100 dark:bg-red-900/20";
+    }
+    if (isDueToday(dueDate)) {
+      return "bg-blue-100 dark:bg-blue-900/20";
+    }
+    return "bg-green-100 dark:bg-green-900/20";
+  };
+
   if (isLoading) return <div>Carregando...</div>;
 
   return (
@@ -111,7 +125,7 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
           {subscriptions?.map((subscription) => (
             <TableRow 
               key={subscription.id}
-              className={isOverdue(subscription.due_date) ? "bg-red-100 dark:bg-red-900/20" : ""}
+              className={getRowClassName(subscription.due_date)}
             >
               <TableCell>{subscription.name}</TableCell>
               <TableCell>{subscription.phone}</TableCell>
