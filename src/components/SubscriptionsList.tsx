@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { isBefore, isToday } from "date-fns";
+import { isBefore, isToday, parseISO } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionRow } from "./subscription/SubscriptionRow";
@@ -55,9 +55,10 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
             sub.payment_status !== 'inactive'
           );
         case 'due-today':
-          return subscriptionsData.filter(sub => 
-            isToday(new Date(sub.due_date))
-          );
+          return subscriptionsData.filter(sub => {
+            const dueDate = parseISO(sub.due_date);
+            return isToday(dueDate);
+          });
         case 'all':
           return subscriptionsData;
         default:
@@ -82,10 +83,11 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   };
 
   const getRowClassName = (dueDate: string) => {
-    if (isBefore(new Date(dueDate), new Date())) {
+    const date = parseISO(dueDate);
+    if (isBefore(date, new Date())) {
       return "bg-red-100";
     }
-    if (isToday(new Date(dueDate))) {
+    if (isToday(date)) {
       return "bg-blue-100";
     }
     return "bg-green-100";
