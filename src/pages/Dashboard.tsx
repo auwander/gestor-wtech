@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
+import { format, isBefore, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, Users } from "lucide-react";
 
@@ -13,32 +13,39 @@ export default function Dashboard() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: async () => {
-      const { data: totalClients, count: totalCount } = await supabase
+      const { data: allClients, count: totalCount } = await supabase
         .from("client_subscriptions")
         .select("id", { count: "exact", head: true });
 
-      const { data: overdueClients, count: overdueCount } = await supabase
+      // Get all subscriptions to check due dates
+      const { data: subscriptions } = await supabase
         .from("client_subscriptions")
-        .select("id", { count: "exact", head: true })
-        .eq("payment_status", "inactive");
+        .select("due_date, amount, payment_status");
 
-      const { data: dueTodayClients, count: dueTodayCount } = await supabase
-        .from("client_subscriptions")
-        .select("id", { count: "exact", head: true })
-        .eq("due_date", today);
+      // Count overdue subscriptions (due_date is before today)
+      const overdueCount = subscriptions?.filter(sub => 
+        isBefore(parseISO(sub.due_date), new Date()) && 
+        sub.payment_status !== 'inactive'
+      ).length || 0;
 
-      const { data: monthlyRevenue } = await supabase
-        .from("client_subscriptions")
-        .select("amount")
-        .eq("payment_status", "active");
+      // Count subscriptions due today
+      const dueTodayCount = subscriptions?.filter(sub => 
+        format(parseISO(sub.due_date), 'yyyy-MM-dd') === today
+      ).length || 0;
 
-      const totalMonthlyRevenue = monthlyRevenue?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
+      // Calculate monthly revenue from active subscriptions
+      const monthlyRevenue = subscriptions?.reduce((acc, curr) => {
+        if (curr.payment_status === 'active') {
+          return acc + Number(curr.amount);
+        }
+        return acc;
+      }, 0) || 0;
 
       return {
         totalClients: totalCount || 0,
-        overdueClients: overdueCount || 0,
-        dueTodayClients: dueTodayCount || 0,
-        monthlyRevenue: totalMonthlyRevenue,
+        overdueClients: overdueCount,
+        dueTodayClients: dueTodayCount,
+        monthlyRevenue: monthlyRevenue,
       };
     },
   });
