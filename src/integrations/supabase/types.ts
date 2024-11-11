@@ -128,6 +128,7 @@ export type Database = {
           amount: number
           app: string
           combo_app: string | null
+          company: string | null
           created_at: string
           due_date: string
           id: string
@@ -141,6 +142,7 @@ export type Database = {
           amount: number
           app: string
           combo_app?: string | null
+          company?: string | null
           created_at?: string
           due_date: string
           id?: string
@@ -154,6 +156,7 @@ export type Database = {
           amount?: number
           app?: string
           combo_app?: string | null
+          company?: string | null
           created_at?: string
           due_date?: string
           id?: string
@@ -303,6 +306,21 @@ export type Database = {
           data?: string
           id?: number
           pedido?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          company: string
+          id: string
+        }
+        Insert: {
+          company: string
+          id: string
+        }
+        Update: {
+          company?: string
+          id?: string
         }
         Relationships: []
       }
