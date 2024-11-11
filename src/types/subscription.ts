@@ -9,4 +9,5 @@ export type Subscription = {
   combo_app?: string;
   last_payment_date?: string;
   payment_status?: string;
+  company?: string;
 };

@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { formSchema } from "./subscription/schema";
 import { FormFields } from "./subscription/FormFields";
 import type { z } from "zod";
+import { useEffect, useState } from "react";
 
 export function SubscriptionForm() {
   const { toast } = useToast();
+  const [userCompany, setUserCompany] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -17,7 +19,34 @@ export function SubscriptionForm() {
     },
   });
 
+  useEffect(() => {
+    async function getUserCompany() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('company')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile) {
+          setUserCompany(profile.company);
+        }
+      }
+    }
+    getUserCompany();
+  }, []);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!userCompany) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao registrar assinatura",
+        description: "Empresa não encontrada para o usuário.",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.from("client_subscriptions").insert({
         name: values.name,
@@ -27,6 +56,7 @@ export function SubscriptionForm() {
         due_date: values.due_date,
         is_combo: values.is_combo,
         combo_app: values.is_combo ? "Eppi" : null,
+        company: userCompany,
       });
 
       if (error) throw error;
