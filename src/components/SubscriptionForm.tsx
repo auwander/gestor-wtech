@@ -34,7 +34,6 @@ export function SubscriptionForm() {
 
         if (profileError) {
           // If profile doesn't exist, try to create it with a default company
-          // You might want to adjust this logic based on your requirements
           const { error: insertError } = await supabase
             .from('profiles')
             .insert([
@@ -108,9 +107,17 @@ export function SubscriptionForm() {
       toast({
         title: "Assinatura registrada com sucesso!",
         description: "O cliente foi cadastrado no sistema.",
+        className: "fixed bottom-0 right-0 mb-4 mr-4",
       });
 
-      form.reset();
+      form.reset({
+        name: "",
+        phone: "",
+        app: "",
+        amount: "",
+        due_date: "",
+        is_combo: false,
+      });
     } catch (error) {
       toast({
         variant: "destructive",
