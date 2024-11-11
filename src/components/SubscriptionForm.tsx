@@ -13,7 +13,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -24,6 +30,15 @@ const formSchema = z.object({
   is_combo: z.boolean().default(false),
   combo_app: z.string().optional(),
 });
+
+const APP_OPTIONS = [
+  "Redplay",
+  "Duna",
+  "TVE",
+  "Blue",
+  "pix",
+  "Eppi",
+] as const;
 
 export function SubscriptionForm() {
   const { toast } = useToast();
@@ -100,26 +115,20 @@ export function SubscriptionForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>App</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="app1" />
-                    </FormControl>
-                    <FormLabel className="font-normal">App 1</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="app2" />
-                    </FormControl>
-                    <FormLabel className="font-normal">App 2</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um app" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {APP_OPTIONS.map((app) => (
+                    <SelectItem key={app} value={app}>
+                      {app}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
