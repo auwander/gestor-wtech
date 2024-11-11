@@ -9,7 +9,7 @@ import {
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Subscription } from "@/types/subscription";
 import { Form } from "@/components/ui/form";
@@ -57,20 +57,21 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
 
       if (error) throw error;
 
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      
       toast({
         title: "Assinatura atualizada com sucesso!",
         description: "Os dados foram atualizados no sistema.",
       });
 
-      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       setOpen(false);
     } catch (error) {
+      console.error("Error details:", error);
       toast({
         variant: "destructive",
         title: "Erro ao atualizar assinatura",
         description: "Tente novamente mais tarde.",
       });
-      console.error("Error details:", error);
     }
   }
 

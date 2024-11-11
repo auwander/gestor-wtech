@@ -82,11 +82,11 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         return;
       }
 
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      
       toast({
         title: "Assinatura deletada com sucesso",
       });
-      
-      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
     } catch (error) {
       console.error("Error deleting subscription:", error);
       toast({
@@ -176,9 +176,7 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction 
-                        onClick={() => handleDelete(subscription.id)}
-                      >
+                      <AlertDialogAction onClick={() => handleDelete(subscription.id)}>
                         Confirmar
                       </AlertDialogAction>
                     </AlertDialogFooter>
