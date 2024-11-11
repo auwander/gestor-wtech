@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { format, isBefore, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, Users } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -58,7 +57,6 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
         <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-4 items-center">
-          <ThemeToggle />
           <Button
             onClick={() => navigate("/subscriptions")}
             variant="outline"
@@ -102,7 +100,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-red-500 dark:text-red-400">{stats?.overdueClients}</div>
+            <div className="text-4xl font-bold text-red-500">{stats?.overdueClients}</div>
           </CardContent>
         </Card>
 
@@ -116,7 +114,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-yellow-500 dark:text-yellow-400">{stats?.dueTodayClients}</div>
+            <div className="text-4xl font-bold text-yellow-500">{stats?.dueTodayClients}</div>
           </CardContent>
         </Card>
 
@@ -127,7 +125,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-green-500 dark:text-green-400">
+            <div className="text-4xl font-bold text-green-500">
               R$ {stats?.monthlyRevenue.toFixed(2)}
             </div>
           </CardContent>
