@@ -26,6 +26,7 @@ export function SubscriptionForm() {
         amount: parseFloat(values.amount),
         due_date: values.due_date,
         is_combo: values.is_combo,
+        combo_app: values.is_combo ? "Eppi" : null,
       });
 
       if (error) throw error;
@@ -42,6 +43,7 @@ export function SubscriptionForm() {
         title: "Erro ao registrar assinatura",
         description: "Tente novamente mais tarde.",
       });
+      console.error("Error details:", error);
     }
   }
 
