@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { isBefore, isToday, parseISO } from "date-fns";
+import { isBefore, isEqual, parseISO } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionRow } from "./subscription/SubscriptionRow";
@@ -50,14 +50,17 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
 
       switch (filter) {
         case 'inactive':
-          return subscriptionsData.filter(sub => 
-            isBefore(new Date(sub.due_date), today) && 
-            sub.payment_status !== 'inactive'
-          );
+          return subscriptionsData.filter(sub => {
+            const dueDate = parseISO(sub.due_date);
+            return isBefore(dueDate, today) && sub.payment_status !== 'inactive';
+          });
         case 'due-today':
           return subscriptionsData.filter(sub => {
             const dueDate = parseISO(sub.due_date);
-            return isToday(dueDate);
+            return isEqual(
+              new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()),
+              new Date(today.getFullYear(), today.getMonth(), today.getDate())
+            );
           });
         case 'all':
           return subscriptionsData;
@@ -84,10 +87,15 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
 
   const getRowClassName = (dueDate: string) => {
     const date = parseISO(dueDate);
-    if (isBefore(date, new Date())) {
+    const today = new Date();
+    
+    if (isBefore(date, today)) {
       return "bg-red-100";
     }
-    if (isToday(date)) {
+    if (isEqual(
+      new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+      new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    )) {
       return "bg-blue-100";
     }
     return "bg-green-100";

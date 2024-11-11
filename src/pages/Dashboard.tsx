@@ -2,13 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { format, isBefore, parseISO } from "date-fns";
+import { format, isBefore, isEqual, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, Users } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const today = format(new Date(), 'yyyy-MM-dd');
+  const today = new Date();
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
@@ -23,15 +23,19 @@ export default function Dashboard() {
         .select("due_date, amount, payment_status");
 
       // Count overdue subscriptions (due_date is before today)
-      const overdueCount = subscriptions?.filter(sub => 
-        isBefore(parseISO(sub.due_date), new Date()) && 
-        sub.payment_status !== 'inactive'
-      ).length || 0;
+      const overdueCount = subscriptions?.filter(sub => {
+        const dueDate = parseISO(sub.due_date);
+        return isBefore(dueDate, today) && sub.payment_status !== 'inactive';
+      }).length || 0;
 
-      // Count subscriptions due today
-      const dueTodayCount = subscriptions?.filter(sub => 
-        format(parseISO(sub.due_date), 'yyyy-MM-dd') === today
-      ).length || 0;
+      // Count subscriptions due today (exact match with today's date)
+      const dueTodayCount = subscriptions?.filter(sub => {
+        const dueDate = parseISO(sub.due_date);
+        return isEqual(
+          new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()),
+          new Date(today.getFullYear(), today.getMonth(), today.getDate())
+        );
+      }).length || 0;
 
       // Calculate monthly revenue from active subscriptions
       const monthlyRevenue = subscriptions?.reduce((acc, curr) => {
