@@ -67,24 +67,35 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   });
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from("client_subscriptions")
-      .delete()
-      .eq("id", id);
+    try {
+      const { error } = await supabase
+        .from("client_subscriptions")
+        .delete()
+        .eq("id", id);
 
-    if (error) {
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao deletar assinatura",
+          description: error.message,
+        });
+        return;
+      }
+
+      toast({
+        title: "Assinatura deletada com sucesso",
+      });
+      
+      // Invalidate and refetch the subscriptions query
+      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+    } catch (error) {
+      console.error("Error deleting subscription:", error);
       toast({
         variant: "destructive",
         title: "Erro ao deletar assinatura",
-        description: error.message,
+        description: "Ocorreu um erro ao tentar deletar a assinatura.",
       });
-      return;
     }
-
-    toast({
-      title: "Assinatura deletada com sucesso",
-    });
-    queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
   };
 
   const isOverdue = (dueDate: string) => {
@@ -138,8 +149,8 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                     subscription.payment_status === "active"
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
-                      : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
                   }`}
                 >
                   {subscription.payment_status === "active"
