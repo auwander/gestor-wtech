@@ -57,7 +57,7 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       
       toast({
         title: "Assinatura atualizada com sucesso!",

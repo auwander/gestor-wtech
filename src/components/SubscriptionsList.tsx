@@ -82,7 +82,7 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         return;
       }
 
-      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       
       toast({
         title: "Assinatura deletada com sucesso",
