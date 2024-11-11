@@ -50,18 +50,15 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
 
       switch (filter) {
         case 'inactive':
-          // Filter overdue subscriptions
           return subscriptionsData.filter(sub => 
             isBefore(new Date(sub.due_date), today) && 
             sub.payment_status !== 'inactive'
           );
         case 'due-today':
-          // Filter subscriptions due today
           return subscriptionsData.filter(sub => 
             isToday(new Date(sub.due_date))
           );
         case 'all':
-          // Return all subscriptions
           return subscriptionsData;
         default:
           return subscriptionsData;
@@ -90,6 +87,10 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
     queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
   };
 
+  const isOverdue = (dueDate: string) => {
+    return isBefore(new Date(dueDate), new Date());
+  };
+
   if (isLoading) return <div>Carregando...</div>;
 
   return (
@@ -108,7 +109,10 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         </TableHeader>
         <TableBody>
           {subscriptions?.map((subscription) => (
-            <TableRow key={subscription.id}>
+            <TableRow 
+              key={subscription.id}
+              className={isOverdue(subscription.due_date) ? "bg-red-100 dark:bg-red-900/20" : ""}
+            >
               <TableCell>{subscription.name}</TableCell>
               <TableCell>{subscription.phone}</TableCell>
               <TableCell>{subscription.app}</TableCell>
@@ -120,8 +124,8 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                     subscription.payment_status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
                   }`}
                 >
                   {subscription.payment_status === "active"
