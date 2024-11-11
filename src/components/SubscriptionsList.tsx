@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Subscription } from "@/types/subscription";
+import { EditSubscriptionDialog } from "./subscription/EditSubscriptionDialog";
 
 export function SubscriptionsList() {
   const { data: subscriptions, isLoading } = useQuery({
@@ -38,6 +39,7 @@ export function SubscriptionsList() {
             <TableHead>Valor</TableHead>
             <TableHead>Vencimento</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -62,6 +64,9 @@ export function SubscriptionsList() {
                     ? "Ativo"
                     : "Inativo"}
                 </span>
+              </TableCell>
+              <TableCell>
+                <EditSubscriptionDialog subscription={subscription} />
               </TableCell>
             </TableRow>
           ))}
