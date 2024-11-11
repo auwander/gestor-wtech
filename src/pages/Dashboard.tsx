@@ -87,7 +87,10 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="w-full">
+        <Card 
+          className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => navigate("/subscriptions?filter=inactive")}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Clientes Inadimplentes

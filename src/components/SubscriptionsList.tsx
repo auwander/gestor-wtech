@@ -26,17 +26,27 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export function SubscriptionsList() {
+interface SubscriptionsListProps {
+  filter?: string | null;
+}
+
+export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: subscriptions, isLoading } = useQuery({
-    queryKey: ["subscriptions"],
+    queryKey: ["subscriptions", filter],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("client_subscriptions")
         .select("*")
         .order("due_date", { ascending: true });
+
+      if (filter === 'inactive') {
+        query = query.eq('payment_status', 'inactive');
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return data as Subscription[];
