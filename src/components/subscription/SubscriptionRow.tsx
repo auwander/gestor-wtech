@@ -22,6 +22,11 @@ interface SubscriptionRowProps {
 }
 
 export function SubscriptionRow({ subscription, onDelete, className }: SubscriptionRowProps) {
+  const formatDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year.slice(2)}`;
+  };
+
   return (
     <TableRow className={className}>
       <TableCell>{subscription.name}</TableCell>
@@ -29,7 +34,7 @@ export function SubscriptionRow({ subscription, onDelete, className }: Subscript
       <TableCell>{subscription.account || '-'}</TableCell>
       <TableCell>{subscription.app}</TableCell>
       <TableCell>R$ {subscription.amount.toFixed(2)}</TableCell>
-      <TableCell>{subscription.due_date}</TableCell>
+      <TableCell>{formatDate(subscription.due_date)}</TableCell>
       <TableCell>
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
