@@ -46,7 +46,17 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       }
 
       const subscriptionsData = data as Subscription[];
+      
+      // Log the dates for debugging
+      subscriptionsData.forEach(sub => {
+        console.log(`Subscription ${sub.name}:`, {
+          rawDueDate: sub.due_date,
+          parsedDate: parseISO(sub.due_date).toISOString(),
+        });
+      });
+
       const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
 
       switch (filter) {
         case 'inactive':
@@ -57,10 +67,8 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         case 'due-today':
           return subscriptionsData.filter(sub => {
             const dueDate = parseISO(sub.due_date);
-            return isEqual(
-              new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()),
-              new Date(today.getFullYear(), today.getMonth(), today.getDate())
-            );
+            dueDate.setHours(0, 0, 0, 0); // Reset time to start of day
+            return isEqual(dueDate, today);
           });
         case 'all':
           return subscriptionsData;
@@ -88,14 +96,13 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   const getRowClassName = (dueDate: string) => {
     const date = parseISO(dueDate);
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day
+    date.setHours(0, 0, 0, 0); // Reset time to start of day
     
     if (isBefore(date, today)) {
       return "bg-red-100";
     }
-    if (isEqual(
-      new Date(date.getFullYear(), date.getMonth(), date.getDate()),
-      new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    )) {
+    if (isEqual(date, today)) {
       return "bg-blue-100";
     }
     return "bg-green-100";
