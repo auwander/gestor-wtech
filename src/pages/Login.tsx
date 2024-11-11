@@ -17,9 +17,9 @@ const Login = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+      <h1 className="text-4xl font-['Roboto'] text-orange-500 mb-8">MeuGestor</h1>
       <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-8">Login</h1>
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
