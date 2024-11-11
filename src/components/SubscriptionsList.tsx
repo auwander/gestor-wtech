@@ -43,7 +43,14 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         .order("due_date", { ascending: true });
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar assinaturas",
+          description: error.message,
+        });
+        throw error;
+      }
 
       const subscriptionsData = data as Subscription[];
       const today = new Date();
@@ -71,9 +78,11 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       const { error } = await supabase
         .from("client_subscriptions")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .single();
 
       if (error) {
+        console.error("Supabase delete error:", error);
         toast({
           variant: "destructive",
           title: "Erro ao deletar assinatura",

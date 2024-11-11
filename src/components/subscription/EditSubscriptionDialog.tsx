@@ -53,9 +53,18 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
           is_combo: values.is_combo,
           combo_app: values.is_combo ? "Eppi" : null,
         })
-        .eq("id", subscription.id);
+        .eq("id", subscription.id)
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase update error:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao atualizar assinatura",
+          description: error.message,
+        });
+        return;
+      }
 
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       
@@ -66,7 +75,7 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
 
       setOpen(false);
     } catch (error) {
-      console.error("Error details:", error);
+      console.error("Error updating subscription:", error);
       toast({
         variant: "destructive",
         title: "Erro ao atualizar assinatura",
