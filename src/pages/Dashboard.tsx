@@ -77,11 +77,11 @@ export default function Dashboard() {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card 
-          className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
+          className="w-full cursor-pointer hover:bg-accent transition-colors border-2"
           onClick={() => navigate("/subscriptions?filter=all")}
         >
           <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-600">
+            <CardTitle className="text-lg font-medium">
               Total de Clientes
             </CardTitle>
           </CardHeader>
@@ -91,41 +91,41 @@ export default function Dashboard() {
         </Card>
 
         <Card 
-          className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
+          className="w-full cursor-pointer hover:bg-accent transition-colors border-2"
           onClick={() => navigate("/subscriptions?filter=inactive")}
         >
           <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-600">
+            <CardTitle className="text-lg font-medium">
               Clientes Inadimplentes
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-red-600">{stats?.overdueClients}</div>
+            <div className="text-4xl font-bold text-red-500 dark:text-red-400">{stats?.overdueClients}</div>
           </CardContent>
         </Card>
 
         <Card 
-          className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
+          className="w-full cursor-pointer hover:bg-accent transition-colors border-2"
           onClick={() => navigate("/subscriptions?filter=due-today")}
         >
           <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-600">
+            <CardTitle className="text-lg font-medium">
               Vencimentos Hoje
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-yellow-600">{stats?.dueTodayClients}</div>
+            <div className="text-4xl font-bold text-yellow-500 dark:text-yellow-400">{stats?.dueTodayClients}</div>
           </CardContent>
         </Card>
 
-        <Card className="w-full">
+        <Card className="w-full border-2">
           <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-600">
+            <CardTitle className="text-lg font-medium">
               Faturamento Mensal
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-green-600">
+            <div className="text-4xl font-bold text-green-500 dark:text-green-400">
               R$ {stats?.monthlyRevenue.toFixed(2)}
             </div>
           </CardContent>
