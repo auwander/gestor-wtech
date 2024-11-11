@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format, isBefore } from "date-fns";
+import { format, isBefore, isToday } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { EditSubscriptionDialog } from "./subscription/EditSubscriptionDialog";
 import {
@@ -42,22 +42,30 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         .select("*")
         .order("due_date", { ascending: true });
 
-      if (filter === 'inactive') {
-        const today = new Date();
-        const { data, error } = await query;
-        
-        if (error) throw error;
-        
-        // Filter overdue subscriptions (due_date is before today and payment_status is not 'inactive')
-        return (data as Subscription[]).filter(sub => 
-          isBefore(new Date(sub.due_date), today) && 
-          sub.payment_status !== 'inactive'
-        );
-      }
-
       const { data, error } = await query;
       if (error) throw error;
-      return data as Subscription[];
+
+      const subscriptionsData = data as Subscription[];
+      const today = new Date();
+
+      switch (filter) {
+        case 'inactive':
+          // Filter overdue subscriptions
+          return subscriptionsData.filter(sub => 
+            isBefore(new Date(sub.due_date), today) && 
+            sub.payment_status !== 'inactive'
+          );
+        case 'due-today':
+          // Filter subscriptions due today
+          return subscriptionsData.filter(sub => 
+            isToday(new Date(sub.due_date))
+          );
+        case 'all':
+          // Return all subscriptions
+          return subscriptionsData;
+        default:
+          return subscriptionsData;
+      }
     },
   });
 

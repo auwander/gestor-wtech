@@ -76,7 +76,10 @@ export default function Dashboard() {
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="w-full">
+        <Card 
+          className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => navigate("/subscriptions?filter=all")}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total de Clientes
@@ -101,7 +104,10 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="w-full">
+        <Card 
+          className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => navigate("/subscriptions?filter=due-today")}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Vencimentos Hoje
