@@ -54,8 +54,8 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
         <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-4">
           <Button
             onClick={() => navigate("/subscriptions")}
@@ -75,18 +75,18 @@ export default function Dashboard() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card 
           className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
           onClick={() => navigate("/subscriptions?filter=all")}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
+            <CardTitle className="text-lg font-medium text-gray-600">
               Total de Clientes
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalClients}</div>
+          <CardContent className="flex justify-center items-center pt-4">
+            <div className="text-4xl font-bold">{stats?.totalClients}</div>
           </CardContent>
         </Card>
 
@@ -94,13 +94,13 @@ export default function Dashboard() {
           className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
           onClick={() => navigate("/subscriptions?filter=inactive")}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
+            <CardTitle className="text-lg font-medium text-gray-600">
               Clientes Inadimplentes
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats?.overdueClients}</div>
+          <CardContent className="flex justify-center items-center pt-4">
+            <div className="text-4xl font-bold text-red-600">{stats?.overdueClients}</div>
           </CardContent>
         </Card>
 
@@ -108,24 +108,24 @@ export default function Dashboard() {
           className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
           onClick={() => navigate("/subscriptions?filter=due-today")}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
+            <CardTitle className="text-lg font-medium text-gray-600">
               Vencimentos Hoje
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats?.dueTodayClients}</div>
+          <CardContent className="flex justify-center items-center pt-4">
+            <div className="text-4xl font-bold text-yellow-600">{stats?.dueTodayClients}</div>
           </CardContent>
         </Card>
 
         <Card className="w-full">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
+            <CardTitle className="text-lg font-medium text-gray-600">
               Faturamento Mensal
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+          <CardContent className="flex justify-center items-center pt-4">
+            <div className="text-4xl font-bold text-green-600">
               R$ {stats?.monthlyRevenue.toFixed(2)}
             </div>
           </CardContent>
