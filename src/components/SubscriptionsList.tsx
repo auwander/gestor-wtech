@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { parseISO, isBefore, isEqual, startOfDay } from "date-fns";
+import { parseISO, isBefore, isEqual } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionRow } from "./subscription/SubscriptionRow";
@@ -46,10 +46,12 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       }
 
       const subscriptionsData = data as Subscription[];
-      const today = startOfDay(new Date());
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
       const compareDates = (dateStr: string) => {
-        const date = startOfDay(parseISO(dateStr));
+        const date = parseISO(dateStr);
+        date.setHours(0, 0, 0, 0);
         return { 
           date, 
           isBeforeToday: isBefore(date, today), 
@@ -104,8 +106,10 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   };
 
   const compareDates = (dateStr: string) => {
-    const date = startOfDay(parseISO(dateStr));
-    const today = startOfDay(new Date());
+    const date = parseISO(dateStr);
+    date.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     return {
       isBeforeToday: isBefore(date, today),
       isToday: isEqual(date, today)

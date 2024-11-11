@@ -9,7 +9,7 @@ import { FormFields } from "./subscription/FormFields";
 import type { z } from "zod";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { startOfDay } from "date-fns";
+import { parseISO } from "date-fns";
 
 export function SubscriptionForm() {
   const { toast } = useToast();
@@ -90,9 +90,8 @@ export function SubscriptionForm() {
     }
 
     try {
-      // Garantir que a data seja tratada corretamente, removendo o timezone
-      const date = new Date(values.due_date);
-      const dueDate = startOfDay(date).toISOString().split('T')[0];
+      // Usar a data exatamente como vem do input type="date", que já está no formato YYYY-MM-DD
+      const dueDate = values.due_date;
 
       const { error } = await supabase.from("client_subscriptions").insert({
         name: values.name,
