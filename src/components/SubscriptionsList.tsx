@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { isBefore, isEqual, format } from "date-fns";
+import { startOfDay, isBefore, isEqual } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionRow } from "./subscription/SubscriptionRow";
@@ -46,20 +46,17 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       }
 
       const subscriptionsData = data as Subscription[];
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0);
+      const today = startOfDay(new Date());
 
       switch (filter) {
         case 'inactive':
           return subscriptionsData.filter(sub => {
-            const dueDate = new Date(sub.due_date);
-            dueDate.setUTCHours(0, 0, 0, 0);
+            const dueDate = startOfDay(new Date(sub.due_date));
             return isBefore(dueDate, today) && sub.payment_status !== 'inactive';
           });
         case 'due-today':
           return subscriptionsData.filter(sub => {
-            const dueDate = new Date(sub.due_date);
-            dueDate.setUTCHours(0, 0, 0, 0);
+            const dueDate = startOfDay(new Date(sub.due_date));
             return isEqual(dueDate, today);
           });
         case 'all':
@@ -86,10 +83,8 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   };
 
   const getRowClassName = (dueDate: string) => {
-    const date = new Date(dueDate);
-    date.setUTCHours(0, 0, 0, 0);
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    const date = startOfDay(new Date(dueDate));
+    const today = startOfDay(new Date());
     
     if (isBefore(date, today)) {
       return "bg-red-100";
