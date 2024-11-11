@@ -18,6 +18,7 @@ export function SubscriptionForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       is_combo: false,
+      account: "",
     },
   });
 
@@ -100,6 +101,7 @@ export function SubscriptionForm() {
         is_combo: values.is_combo,
         combo_app: values.is_combo ? "Eppi" : null,
         company: userCompany,
+        account: values.account || null,
       });
 
       if (error) throw error;
@@ -117,6 +119,7 @@ export function SubscriptionForm() {
         amount: "",
         due_date: "",
         is_combo: false,
+        account: "",
       });
     } catch (error) {
       toast({

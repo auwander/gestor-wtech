@@ -125,6 +125,7 @@ export type Database = {
       }
       client_subscriptions: {
         Row: {
+          account: string | null
           amount: number
           app: string
           combo_app: string | null
@@ -139,6 +140,7 @@ export type Database = {
           phone: string
         }
         Insert: {
+          account?: string | null
           amount: number
           app: string
           combo_app?: string | null
@@ -153,6 +155,7 @@ export type Database = {
           phone: string
         }
         Update: {
+          account?: string | null
           amount?: number
           app?: string
           combo_app?: string | null

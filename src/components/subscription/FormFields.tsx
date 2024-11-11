@@ -4,7 +4,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { APP_OPTIONS } from "./schema";
 import { UseFormReturn } from "react-hook-form";
-import { format } from "date-fns";
 
 interface FormFieldsProps {
   form: UseFormReturn<any>;
@@ -35,6 +34,20 @@ export function FormFields({ form }: FormFieldsProps) {
             <FormLabel>Telefone</FormLabel>
             <FormControl>
               <Input placeholder="(00) 00000-0000" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="account"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Conta</FormLabel>
+            <FormControl>
+              <Input placeholder="Conta do cliente" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -7,6 +7,7 @@ export const formSchema = z.object({
   amount: z.string().min(1, "Digite o valor"),
   due_date: z.string().min(1, "Selecione uma data"),
   is_combo: z.boolean().default(false),
+  account: z.string().optional(),
 });
 
 export const APP_OPTIONS = [
