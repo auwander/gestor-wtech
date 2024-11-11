@@ -97,9 +97,16 @@ export function FormFields({ form }: FormFieldsProps) {
                 type="date" 
                 {...field}
                 onChange={(e) => {
-                  field.onChange(e.target.value);
+                  const date = e.target.value;
+                  if (date) {
+                    const formattedDate = format(new Date(date), 'dd/MM/yyyy');
+                    field.onChange(date);
+                    e.target.setAttribute('data-display', formattedDate);
+                  }
                 }}
                 value={field.value}
+                className="[&::-webkit-datetime-edit]:text-transparent [&::-webkit-datetime-edit]:after:content-[attr(data-display)]"
+                data-display={field.value ? format(new Date(field.value), 'dd/MM/yyyy') : ''}
               />
             </FormControl>
             <FormMessage />
