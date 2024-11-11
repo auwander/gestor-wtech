@@ -49,8 +49,13 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       const today = startOfDay(new Date());
 
       const compareDates = (dateStr: string) => {
-        const date = startOfDay(parseISO(dateStr));
-        return { date, isBeforeToday: isBefore(date, today), isToday: isEqual(date, today) };
+        // Ajuste para considerar a data sem o timezone
+        const date = startOfDay(new Date(dateStr + 'T00:00:00'));
+        return { 
+          date, 
+          isBeforeToday: isBefore(date, today), 
+          isToday: isEqual(date, today) 
+        };
       };
 
       switch (filter) {
@@ -100,7 +105,8 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   };
 
   const compareDates = (dateStr: string) => {
-    const date = startOfDay(parseISO(dateStr));
+    // Ajuste para considerar a data sem o timezone
+    const date = startOfDay(new Date(dateStr + 'T00:00:00'));
     const today = startOfDay(new Date());
     return {
       isBeforeToday: isBefore(date, today),
