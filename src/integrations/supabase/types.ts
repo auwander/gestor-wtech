@@ -123,6 +123,48 @@ export type Database = {
         }
         Relationships: []
       }
+      client_subscriptions: {
+        Row: {
+          amount: number
+          app: string
+          combo_app: string | null
+          created_at: string
+          due_date: string
+          id: string
+          is_combo: boolean | null
+          last_payment_date: string | null
+          name: string
+          payment_status: string | null
+          phone: string
+        }
+        Insert: {
+          amount: number
+          app: string
+          combo_app?: string | null
+          created_at?: string
+          due_date: string
+          id?: string
+          is_combo?: boolean | null
+          last_payment_date?: string | null
+          name: string
+          payment_status?: string | null
+          phone: string
+        }
+        Update: {
+          amount?: number
+          app?: string
+          combo_app?: string | null
+          created_at?: string
+          due_date?: string
+          id?: string
+          is_combo?: boolean | null
+          last_payment_date?: string | null
+          name?: string
+          payment_status?: string | null
+          phone?: string
+        }
+        Relationships: []
+      }
       CODIGOS_PANEL: {
         Row: {
           codigo: string | null
