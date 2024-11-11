@@ -86,8 +86,7 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         title: "Assinatura deletada com sucesso",
       });
       
-      // Invalidate and refetch the subscriptions query
-      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
     } catch (error) {
       console.error("Error deleting subscription:", error);
       toast({
@@ -108,12 +107,12 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
 
   const getRowClassName = (dueDate: string) => {
     if (isOverdue(dueDate)) {
-      return "bg-red-100 dark:bg-red-900/20";
+      return "bg-red-100";
     }
     if (isDueToday(dueDate)) {
-      return "bg-blue-100 dark:bg-blue-900/20";
+      return "bg-blue-100";
     }
-    return "bg-green-100 dark:bg-green-900/20";
+    return "bg-green-100";
   };
 
   if (isLoading) return <div>Carregando...</div>;
@@ -177,7 +176,9 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(subscription.id)}>
+                      <AlertDialogAction 
+                        onClick={() => handleDelete(subscription.id)}
+                      >
                         Confirmar
                       </AlertDialogAction>
                     </AlertDialogFooter>
