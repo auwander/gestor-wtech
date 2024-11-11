@@ -75,18 +75,43 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
+      // First check if the subscription exists
+      const { data: existingData, error: checkError } = await supabase
         .from("client_subscriptions")
-        .delete()
-        .eq("id", id)
-        .single();
+        .select()
+        .eq("id", id);
 
-      if (error) {
-        console.error("Supabase delete error:", error);
+      if (checkError) {
+        console.error("Error checking subscription:", checkError);
+        toast({
+          variant: "destructive",
+          title: "Erro ao verificar assinatura",
+          description: checkError.message,
+        });
+        return;
+      }
+
+      if (!existingData || existingData.length === 0) {
         toast({
           variant: "destructive",
           title: "Erro ao deletar assinatura",
-          description: error.message,
+          description: "Assinatura não encontrada.",
+        });
+        return;
+      }
+
+      // If subscription exists, proceed with deletion
+      const { error: deleteError } = await supabase
+        .from("client_subscriptions")
+        .delete()
+        .eq("id", id);
+
+      if (deleteError) {
+        console.error("Supabase delete error:", deleteError);
+        toast({
+          variant: "destructive",
+          title: "Erro ao deletar assinatura",
+          description: deleteError.message,
         });
         return;
       }

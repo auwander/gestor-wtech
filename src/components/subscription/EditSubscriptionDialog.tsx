@@ -42,7 +42,33 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const { error } = await supabase
+      // First check if the subscription exists
+      const { data: existingData, error: checkError } = await supabase
+        .from("client_subscriptions")
+        .select()
+        .eq("id", subscription.id);
+
+      if (checkError) {
+        console.error("Error checking subscription:", checkError);
+        toast({
+          variant: "destructive",
+          title: "Erro ao verificar assinatura",
+          description: checkError.message,
+        });
+        return;
+      }
+
+      if (!existingData || existingData.length === 0) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao atualizar assinatura",
+          description: "Assinatura não encontrada.",
+        });
+        return;
+      }
+
+      // If subscription exists, proceed with update
+      const { error: updateError } = await supabase
         .from("client_subscriptions")
         .update({
           name: values.name,
@@ -53,15 +79,14 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
           is_combo: values.is_combo,
           combo_app: values.is_combo ? "Eppi" : null,
         })
-        .eq("id", subscription.id)
-        .single();
+        .eq("id", subscription.id);
 
-      if (error) {
-        console.error("Supabase update error:", error);
+      if (updateError) {
+        console.error("Supabase update error:", updateError);
         toast({
           variant: "destructive",
           title: "Erro ao atualizar assinatura",
-          description: error.message,
+          description: updateError.message,
         });
         return;
       }
