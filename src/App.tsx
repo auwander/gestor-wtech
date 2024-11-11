@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Subscriptions from "./pages/Subscriptions";
 import Statistics from "./pages/Statistics";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,14 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route
             path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home"
             element={
               <ProtectedRoute>
                 <Index />
