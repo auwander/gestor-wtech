@@ -100,6 +100,7 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Telefone</TableHead>
+            <TableHead>Conta</TableHead>
             <TableHead>App</TableHead>
             <TableHead>Valor</TableHead>
             <TableHead>Vencimento</TableHead>

@@ -10,4 +10,5 @@ export type Subscription = {
   last_payment_date?: string;
   payment_status?: string;
   company?: string;
+  account?: string;
 };

@@ -27,6 +27,7 @@ export function SubscriptionRow({ subscription, onDelete, className }: Subscript
     <TableRow className={className}>
       <TableCell>{subscription.name}</TableCell>
       <TableCell>{subscription.phone}</TableCell>
+      <TableCell>{subscription.account || '-'}</TableCell>
       <TableCell>{subscription.app}</TableCell>
       <TableCell>R$ {subscription.amount.toFixed(2)}</TableCell>
       <TableCell>
