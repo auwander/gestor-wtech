@@ -48,13 +48,10 @@ export function FormFields({ form }: FormFieldsProps) {
             <FormLabel>App</FormLabel>
             <Select 
               onValueChange={(value) => {
-                field.onChange(value);
-                // If combo is checked, force app to be Eppi
-                if (form.getValues("is_combo")) {
-                  field.onChange("Eppi");
-                }
+                const isCombo = form.getValues("is_combo");
+                field.onChange(isCombo ? `${value} Eppi` : value);
               }} 
-              value={field.value}
+              value={field.value?.replace(" Eppi", "")}
             >
               <FormControl>
                 <SelectTrigger>
@@ -112,9 +109,9 @@ export function FormFields({ form }: FormFieldsProps) {
                 checked={field.value}
                 onCheckedChange={(checked) => {
                   field.onChange(checked);
-                  if (checked) {
-                    // When combo is checked, force app to be Eppi
-                    form.setValue("app", "Eppi");
+                  const currentApp = form.getValues("app")?.replace(" Eppi", "");
+                  if (currentApp) {
+                    form.setValue("app", checked ? `${currentApp} Eppi` : currentApp);
                   }
                 }}
               />
