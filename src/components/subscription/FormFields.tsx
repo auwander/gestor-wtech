@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { APP_OPTIONS } from "./schema";
 import { UseFormReturn } from "react-hook-form";
+import { format, parse } from "date-fns";
 
 interface FormFieldsProps {
   form: UseFormReturn<any>;
@@ -92,7 +93,14 @@ export function FormFields({ form }: FormFieldsProps) {
           <FormItem>
             <FormLabel>Data de Vencimento</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <Input 
+                type="date" 
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                }}
+                value={field.value}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
