@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { startOfDay, isBefore, isEqual } from "date-fns";
+import { parseISO, isBefore, isEqual, startOfDay } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionRow } from "./subscription/SubscriptionRow";
@@ -48,16 +48,21 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       const subscriptionsData = data as Subscription[];
       const today = startOfDay(new Date());
 
+      const compareDates = (dateStr: string) => {
+        const date = startOfDay(parseISO(dateStr));
+        return { date, isBeforeToday: isBefore(date, today), isToday: isEqual(date, today) };
+      };
+
       switch (filter) {
         case 'inactive':
           return subscriptionsData.filter(sub => {
-            const dueDate = startOfDay(new Date(sub.due_date));
-            return isBefore(dueDate, today) && sub.payment_status !== 'inactive';
+            const { isBeforeToday } = compareDates(sub.due_date);
+            return isBeforeToday && sub.payment_status !== 'inactive';
           });
         case 'due-today':
           return subscriptionsData.filter(sub => {
-            const dueDate = startOfDay(new Date(sub.due_date));
-            return isEqual(dueDate, today);
+            const { isToday } = compareDates(sub.due_date);
+            return isToday;
           });
         case 'all':
           return subscriptionsData;
@@ -83,16 +88,24 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   };
 
   const getRowClassName = (dueDate: string) => {
-    const date = startOfDay(new Date(dueDate));
-    const today = startOfDay(new Date());
+    const { isBeforeToday, isToday } = compareDates(dueDate);
     
-    if (isBefore(date, today)) {
+    if (isBeforeToday) {
       return "bg-red-100";
     }
-    if (isEqual(date, today)) {
+    if (isToday) {
       return "bg-blue-100";
     }
     return "bg-green-100";
+  };
+
+  const compareDates = (dateStr: string) => {
+    const date = startOfDay(parseISO(dateStr));
+    const today = startOfDay(new Date());
+    return {
+      isBeforeToday: isBefore(date, today),
+      isToday: isEqual(date, today)
+    };
   };
 
   if (isLoading) return <div>Carregando...</div>;
