@@ -9,7 +9,7 @@ import { FormFields } from "./subscription/FormFields";
 import type { z } from "zod";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { startOfDay } from "date-fns";
+import { startOfDay, format } from "date-fns";
 
 export function SubscriptionForm() {
   const { toast } = useToast();
@@ -90,15 +90,15 @@ export function SubscriptionForm() {
     }
 
     try {
-      // Ensure the date is set to start of day to avoid timezone issues
-      const dueDate = startOfDay(new Date(values.due_date));
+      // Garantir que a data seja formatada corretamente como YYYY-MM-DD
+      const dueDate = format(startOfDay(new Date(values.due_date)), 'yyyy-MM-dd');
 
       const { error } = await supabase.from("client_subscriptions").insert({
         name: values.name,
         phone: values.phone,
         app: values.app,
         amount: parseFloat(values.amount),
-        due_date: dueDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        due_date: dueDate,
         is_combo: values.is_combo,
         combo_app: values.is_combo ? "Eppi" : null,
         company: userCompany,
