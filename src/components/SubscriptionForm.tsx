@@ -8,9 +8,11 @@ import { formSchema } from "./subscription/schema";
 import { FormFields } from "./subscription/FormFields";
 import type { z } from "zod";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function SubscriptionForm() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [userCompany, setUserCompany] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -23,11 +25,22 @@ export function SubscriptionForm() {
     async function getUserCompany() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('company')
           .eq('id', user.id)
           .single();
+        
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Erro ao carregar perfil",
+            description: "Por favor, faça login novamente.",
+          });
+          await supabase.auth.signOut();
+          navigate('/login');
+          return;
+        }
         
         if (profile) {
           setUserCompany(profile.company);
@@ -35,7 +48,7 @@ export function SubscriptionForm() {
       }
     }
     getUserCompany();
-  }, []);
+  }, [toast, navigate]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!userCompany) {
