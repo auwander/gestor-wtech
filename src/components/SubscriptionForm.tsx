@@ -20,7 +20,7 @@ const formSchema = z.object({
   phone: z.string().min(10, "Telefone inválido"),
   app: z.string().min(1, "Selecione um app"),
   amount: z.string().min(1, "Digite o valor"),
-  due_date: z.string(),
+  due_date: z.string().min(1, "Selecione uma data"),
   is_combo: z.boolean().default(false),
   combo_app: z.string().optional(),
 });
@@ -37,8 +37,13 @@ export function SubscriptionForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const { error } = await supabase.from("client_subscriptions").insert({
-        ...values,
+        name: values.name,
+        phone: values.phone,
+        app: values.app,
         amount: parseFloat(values.amount),
+        due_date: values.due_date,
+        is_combo: values.is_combo,
+        combo_app: values.combo_app,
       });
 
       if (error) throw error;
