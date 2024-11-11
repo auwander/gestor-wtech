@@ -9,6 +9,7 @@ import { FormFields } from "./subscription/FormFields";
 import type { z } from "zod";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { startOfDay } from "date-fns";
 
 export function SubscriptionForm() {
   const { toast } = useToast();
@@ -26,7 +27,6 @@ export function SubscriptionForm() {
     async function getUserCompany() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // First try to get the profile
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('company')
@@ -34,7 +34,6 @@ export function SubscriptionForm() {
           .single();
 
         if (profileError) {
-          // If profile doesn't exist, try to create it with a default company
           const { error: insertError } = await supabase
             .from('profiles')
             .insert([
@@ -52,7 +51,6 @@ export function SubscriptionForm() {
             return;
           }
 
-          // Try to get the profile again after creating it
           const { data: newProfile, error: newProfileError } = await supabase
             .from('profiles')
             .select('company')
@@ -92,12 +90,15 @@ export function SubscriptionForm() {
     }
 
     try {
+      // Ensure the date is set to start of day to avoid timezone issues
+      const dueDate = startOfDay(new Date(values.due_date));
+
       const { error } = await supabase.from("client_subscriptions").insert({
         name: values.name,
         phone: values.phone,
         app: values.app,
         amount: parseFloat(values.amount),
-        due_date: values.due_date,
+        due_date: dueDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
         is_combo: values.is_combo,
         combo_app: values.is_combo ? "Eppi" : null,
         company: userCompany,
