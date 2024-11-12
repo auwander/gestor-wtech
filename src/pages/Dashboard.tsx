@@ -4,11 +4,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format, isBefore, isEqual, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, Users } from "lucide-react";
+import { PlusCircle, Users, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const today = new Date();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUserEmail = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserEmail(user?.email || null);
+    };
+    getUserEmail();
+  }, []);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Erro ao fazer logout");
+    } else {
+      toast.success("Logout realizado com sucesso");
+      navigate("/login");
+    }
+  };
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
@@ -59,7 +80,14 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
+          {userEmail && (
+            <p className="text-sm text-muted-foreground">
+              Logado como: {userEmail}
+            </p>
+          )}
+        </div>
         <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-4 items-center">
           <Button
             onClick={() => navigate("/subscriptions")}
@@ -75,6 +103,14 @@ export default function Dashboard() {
           >
             <PlusCircle className="h-4 w-4" />
             Cadastrar Cliente
+          </Button>
+          <Button
+            onClick={handleLogout}
+            variant="destructive"
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Sair
           </Button>
         </div>
       </div>
