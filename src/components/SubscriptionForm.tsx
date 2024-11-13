@@ -24,8 +24,21 @@ export function SubscriptionForm() {
 
   useEffect(() => {
     async function getUserCompany() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast({
+            variant: "destructive",
+            title: "Erro de autenticação",
+            description: "Por favor, faça login novamente.",
+          });
+          navigate('/login');
+          return;
+        }
+
+        console.log("Current user:", user); // Debug log
+
+        // Primeiro, tentar obter o perfil existente
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('company')
@@ -33,46 +46,45 @@ export function SubscriptionForm() {
           .single();
 
         if (profileError) {
-          const { error: insertError } = await supabase
+          console.log("Profile error:", profileError); // Debug log
+          
+          // Se o perfil não existir, criar um novo
+          const companyName = user.email?.split('@')[0] || 'default-company';
+          console.log("Attempting to create profile with company:", companyName); // Debug log
+          
+          const { data: newProfile, error: insertError } = await supabase
             .from('profiles')
             .insert([
-              { id: user.id, company: user.email?.split('@')[0] || 'default-company' }
-            ]);
+              { id: user.id, company: companyName }
+            ])
+            .select()
+            .single();
 
           if (insertError) {
+            console.error("Error creating profile:", insertError);
             toast({
               variant: "destructive",
               title: "Erro ao criar perfil",
               description: "Por favor, contate o suporte.",
             });
-            await supabase.auth.signOut();
-            navigate('/login');
-            return;
-          }
-
-          const { data: newProfile, error: newProfileError } = await supabase
-            .from('profiles')
-            .select('company')
-            .eq('id', user.id)
-            .single();
-
-          if (newProfileError) {
-            toast({
-              variant: "destructive",
-              title: "Erro ao carregar perfil",
-              description: "Por favor, faça login novamente.",
-            });
-            await supabase.auth.signOut();
-            navigate('/login');
             return;
           }
 
           if (newProfile) {
+            console.log("New profile created:", newProfile); // Debug log
             setUserCompany(newProfile.company);
           }
         } else if (profile) {
+          console.log("Existing profile found:", profile); // Debug log
           setUserCompany(profile.company);
         }
+      } catch (error) {
+        console.error("Error in getUserCompany:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar perfil",
+          description: "Por favor, tente novamente mais tarde.",
+        });
       }
     }
     getUserCompany();
@@ -89,7 +101,6 @@ export function SubscriptionForm() {
     }
 
     try {
-      // Usar a data exatamente como vem do input type="date", que já está no formato YYYY-MM-DD
       const dueDate = values.due_date;
 
       const { error } = await supabase.from("client_subscriptions").insert({
@@ -122,12 +133,12 @@ export function SubscriptionForm() {
         account: "",
       });
     } catch (error) {
+      console.error("Error details:", error);
       toast({
         variant: "destructive",
         title: "Erro ao registrar assinatura",
         description: "Tente novamente mais tarde.",
       });
-      console.error("Error details:", error);
     }
   }
 

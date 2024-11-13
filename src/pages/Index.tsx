@@ -13,16 +13,20 @@ const Index = () => {
               <Home className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold">Cadastrar Cliente</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Gerenciamento de Assinaturas
+          </h1>
         </div>
         <Link to="/subscriptions">
-          <Button variant="outline">Ver Lista de Assinaturas</Button>
+          <Button variant="outline" className="hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white transition-all duration-300">
+            Ver Lista de Assinaturas
+          </Button>
         </Link>
       </div>
       
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="p-6 bg-white rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-6">Nova Assinatura</h2>
+        <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+          <h2 className="text-xl font-semibold mb-6 text-purple-800">Nova Assinatura</h2>
           <SubscriptionForm />
         </div>
       </div>

@@ -35,17 +35,6 @@ export function SubscriptionRow({ subscription, onDelete, className }: Subscript
       <TableCell>{subscription.app}</TableCell>
       <TableCell>R$ {subscription.amount.toFixed(2)}</TableCell>
       <TableCell>{formatDate(subscription.due_date)}</TableCell>
-      <TableCell>
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            subscription.payment_status === "active"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          {subscription.payment_status === "active" ? "Ativo" : "Inativo"}
-        </span>
-      </TableCell>
       <TableCell className="flex items-center gap-2">
         <EditSubscriptionDialog subscription={subscription} />
         <AlertDialog>
