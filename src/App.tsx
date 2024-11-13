@@ -22,33 +22,44 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let mounted = true;
 
-    async function getSession() {
+    const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        // Get the current session
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Error getting session:", error);
+          if (mounted) {
+            setSession(null);
+          }
+          return;
+        }
+
         if (mounted) {
-          setSession(session);
+          setSession(currentSession);
         }
       } catch (error) {
-        console.error("Error getting session:", error);
+        console.error("Error in auth initialization:", error);
+        if (mounted) {
+          setSession(null);
+        }
       } finally {
         if (mounted) {
           setLoading(false);
         }
       }
-    }
+    };
 
-    getSession();
+    initializeAuth();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (mounted) {
         setSession(session);
         setLoading(false);
       }
     });
 
+    // Cleanup function
     return () => {
       mounted = false;
       subscription.unsubscribe();
