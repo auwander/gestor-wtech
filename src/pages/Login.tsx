@@ -3,13 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
+      if (event === 'SIGNED_IN' && session) {
+        navigate("/");
+      }
+      if (event === 'USER_UPDATED' && session) {
         navigate("/");
       }
     });
@@ -31,9 +35,27 @@ export default function Login() {
         <div className="mt-10">
           <Auth
             supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
+            appearance={{ 
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#6366f1',
+                    brandAccent: '#4f46e5',
+                  },
+                },
+              },
+            }}
             theme="light"
-            providers={[]}
+            providers={["google"]}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              if (error.message.includes('email_provider_disabled')) {
+                toast.error("Login por email está desativado. Por favor, use outro método de login.");
+              } else {
+                toast.error("Erro ao fazer login. Por favor, tente novamente.");
+              }
+            }}
           />
         </div>
       </div>
