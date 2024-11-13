@@ -67,9 +67,9 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       switch (filter) {
         case 'inactive':
           return subscriptionsData.filter(sub => {
-            const { daysDifference } = compareDates(sub.due_date);
-            // Retorna apenas assinaturas que estão com menos de 1 dia de atraso
-            return daysDifference === 0 && sub.payment_status !== 'inactive';
+            const { isBeforeToday } = compareDates(sub.due_date);
+            // Retorna apenas assinaturas que estão vencidas (antes de hoje)
+            return isBeforeToday && sub.payment_status !== 'inactive';
           });
         case 'due-today':
           return subscriptionsData.filter(sub => {
