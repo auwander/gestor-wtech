@@ -14,7 +14,7 @@ const Index = () => {
         </Link>
         <Link to="/subscriptions">
           <Button variant="outline" className="hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white transition-all duration-300">
-            Ver Lista de Assinaturas
+            Visualizar Clientes
           </Button>
         </Link>
       </div>
