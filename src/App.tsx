@@ -17,9 +17,21 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
+    // Check current session on mount
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    checkSession();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   if (isAuthenticated === null) {
