@@ -27,9 +27,23 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Initialize session from local storage
+    const storedSession = localStorage.getItem('supabase.auth.token');
+    if (storedSession) {
+      try {
+        const parsedSession = JSON.parse(storedSession);
+        setSession(parsedSession);
+      } catch (error) {
+        console.error('Error parsing stored session:', error);
+      }
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
+      if (session) {
+        localStorage.setItem('supabase.auth.token', JSON.stringify(session));
+      }
     });
 
     const {
@@ -37,6 +51,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
+      if (session) {
+        localStorage.setItem('supabase.auth.token', JSON.stringify(session));
+      } else {
+        localStorage.removeItem('supabase.auth.token');
+      }
     });
 
     return () => subscription.unsubscribe();
