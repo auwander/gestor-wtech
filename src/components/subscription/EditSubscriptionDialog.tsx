@@ -79,7 +79,7 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Editar Assinatura</DialogTitle>
+          <DialogTitle>Editar Cliente</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
