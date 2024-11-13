@@ -15,15 +15,13 @@ import { deleteSubscription } from "@/utils/supabaseOperations";
 
 interface SubscriptionsListProps {
   filter?: string | null;
+  searchTerm?: string;
 }
 
-// Move compareDates to module scope so it can be used by all functions
 const compareDates = (dateStr: string) => {
-  // Criar uma data de referência (hoje) no fuso horário local, início do dia
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  // Converter a string de data para objeto Date no fuso horário local
   const date = new Date(dateStr + 'T00:00:00');
   const daysDifference = differenceInDays(today, date);
   return { 
@@ -34,12 +32,12 @@ const compareDates = (dateStr: string) => {
   };
 };
 
-export function SubscriptionsList({ filter }: SubscriptionsListProps) {
+export function SubscriptionsList({ filter, searchTerm }: SubscriptionsListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: subscriptions, isLoading } = useQuery({
-    queryKey: ["subscriptions", filter],
+    queryKey: ["subscriptions", filter, searchTerm],
     queryFn: async () => {
       const { data: profile } = await supabase
         .from("profiles")
@@ -51,6 +49,11 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         .select("*")
         .eq("company", profile.company)
         .order("due_date", { ascending: true });
+
+      // Apply search filter if searchTerm exists
+      if (searchTerm) {
+        query = query.or(`name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,account.ilike.%${searchTerm}%`);
+      }
 
       const { data, error } = await query;
       if (error) {
@@ -68,7 +71,6 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
         case 'inactive':
           return subscriptionsData.filter(sub => {
             const { isBeforeToday } = compareDates(sub.due_date);
-            // Retorna apenas assinaturas que estão vencidas (antes de hoje)
             return isBeforeToday && sub.payment_status !== 'inactive';
           });
         case 'due-today':
