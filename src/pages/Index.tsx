@@ -13,7 +13,7 @@ const Index = () => {
               <Home className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold">Gerenciamento de Assinaturas</h1>
+          <h1 className="text-3xl font-bold">Cadastrar Cliente</h1>
         </div>
         <Link to="/subscriptions">
           <Button variant="outline">Ver Lista de Assinaturas</Button>
