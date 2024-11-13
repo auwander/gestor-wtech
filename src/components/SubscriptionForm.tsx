@@ -36,6 +36,9 @@ export function SubscriptionForm() {
           return;
         }
 
+        console.log("Current user:", user); // Debug log
+
+        // Primeiro, tentar obter o perfil existente
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('company')
@@ -43,14 +46,19 @@ export function SubscriptionForm() {
           .single();
 
         if (profileError) {
-          // Se o perfil não existir, vamos criar um novo
-          const companyName = user.email?.split('@')[0] || 'default-company';
+          console.log("Profile error:", profileError); // Debug log
           
-          const { error: insertError } = await supabase
+          // Se o perfil não existir, criar um novo
+          const companyName = user.email?.split('@')[0] || 'default-company';
+          console.log("Attempting to create profile with company:", companyName); // Debug log
+          
+          const { data: newProfile, error: insertError } = await supabase
             .from('profiles')
             .insert([
               { id: user.id, company: companyName }
-            ]);
+            ])
+            .select()
+            .single();
 
           if (insertError) {
             console.error("Error creating profile:", insertError);
@@ -62,11 +70,12 @@ export function SubscriptionForm() {
             return;
           }
 
-          setUserCompany(companyName);
-          return;
-        }
-
-        if (profile) {
+          if (newProfile) {
+            console.log("New profile created:", newProfile); // Debug log
+            setUserCompany(newProfile.company);
+          }
+        } else if (profile) {
+          console.log("Existing profile found:", profile); // Debug log
           setUserCompany(profile.company);
         }
       } catch (error) {
