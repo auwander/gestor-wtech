@@ -48,12 +48,24 @@ export default function Login() {
             }}
             theme="light"
             providers={["google"]}
-            onError={(error) => {
-              console.error("Auth error:", error);
-              if (error.message.includes('email_provider_disabled')) {
-                toast.error("Login por email está desativado. Por favor, use outro método de login.");
-              } else {
-                toast.error("Erro ao fazer login. Por favor, tente novamente.");
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: "Email",
+                  password_label: "Senha",
+                  button_label: "Entrar",
+                  loading_button_label: "Entrando...",
+                  social_provider_text: "Continuar com {{provider}}",
+                  link_text: "Já tem uma conta? Entre"
+                },
+                sign_up: {
+                  email_label: "Email",
+                  password_label: "Senha",
+                  button_label: "Criar conta",
+                  loading_button_label: "Criando conta...",
+                  social_provider_text: "Continuar com {{provider}}",
+                  link_text: "Não tem uma conta? Cadastre-se"
+                }
               }
             }}
           />
