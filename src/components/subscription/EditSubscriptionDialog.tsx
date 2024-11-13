@@ -37,6 +37,8 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
       amount: subscription.amount.toString(),
       due_date: subscription.due_date,
       is_combo: subscription.is_combo,
+      account: subscription.account || "",
+      subscription_duration: subscription.subscription_duration || 30,
     },
   });
 
@@ -50,12 +52,14 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
         due_date: values.due_date,
         is_combo: values.is_combo,
         combo_app: values.is_combo ? "Eppi" : null,
+        account: values.account || null,
+        subscription_duration: values.subscription_duration,
       });
 
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       
       toast({
-        title: "Assinatura atualizada com sucesso!",
+        title: "Cliente atualizado com sucesso!",
         description: "Os dados foram atualizados no sistema.",
       });
 
@@ -64,7 +68,7 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
       console.error("Error updating subscription:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao atualizar assinatura",
+        title: "Erro ao atualizar cliente",
         description: error.message || "Tente novamente mais tarde.",
       });
     }
