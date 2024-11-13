@@ -146,7 +146,7 @@ export function SubscriptionForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormFields form={form} />
-        <Button type="submit">Registrar Assinatura</Button>
+        <Button type="submit">Salvar Cadastro</Button>
       </form>
     </Form>
   );
