@@ -47,7 +47,6 @@ export default function Login() {
               },
             }}
             theme="light"
-            providers={["google"]}
             localization={{
               variables: {
                 sign_in: {
