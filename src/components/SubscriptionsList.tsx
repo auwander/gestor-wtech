@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { parseISO, isBefore, isEqual } from "date-fns";
+import { parseISO, isBefore, isEqual, differenceInDays } from "date-fns";
 import { Subscription } from "@/types/subscription";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionRow } from "./subscription/SubscriptionRow";
@@ -54,18 +54,21 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       const compareDates = (dateStr: string) => {
         // Converter a string de data para objeto Date no fuso horário local
         const date = new Date(dateStr + 'T00:00:00');
+        const daysDifference = differenceInDays(today, date);
         return { 
           date, 
-          isBeforeToday: isBefore(date, today), 
-          isToday: isEqual(date, today) 
+          isBeforeToday: isBefore(date, today),
+          isToday: isEqual(date, today),
+          daysDifference
         };
       };
 
       switch (filter) {
         case 'inactive':
           return subscriptionsData.filter(sub => {
-            const { isBeforeToday } = compareDates(sub.due_date);
-            return isBeforeToday && sub.payment_status !== 'inactive';
+            const { daysDifference } = compareDates(sub.due_date);
+            // Retorna apenas assinaturas que estão com menos de 1 dia de atraso
+            return daysDifference === 0 && sub.payment_status !== 'inactive';
           });
         case 'due-today':
           return subscriptionsData.filter(sub => {
@@ -105,17 +108,6 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       return "bg-blue-100";
     }
     return "bg-green-100";
-  };
-
-  const compareDates = (dateStr: string) => {
-    // Converter a string de data para objeto Date no fuso horário local
-    const date = new Date(dateStr + 'T00:00:00');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return {
-      isBeforeToday: isBefore(date, today),
-      isToday: isEqual(date, today)
-    };
   };
 
   if (isLoading) return <div>Carregando...</div>;

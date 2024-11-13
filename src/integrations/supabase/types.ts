@@ -294,6 +294,63 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_fee_history: {
+        Row: {
+          created_at: string | null
+          id: number
+          month: string
+          total_fee: number
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          month: string
+          total_fee?: number
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          month?: string
+          total_fee?: number
+          year?: number
+        }
+        Relationships: []
+      }
+      monthly_sales_history: {
+        Row: {
+          average_sale: number
+          created_at: string | null
+          id: number
+          month: string
+          total_fees: number
+          total_revenue: number
+          total_sales: number
+          year: number
+        }
+        Insert: {
+          average_sale: number
+          created_at?: string | null
+          id?: number
+          month: string
+          total_fees: number
+          total_revenue: number
+          total_sales: number
+          year: number
+        }
+        Update: {
+          average_sale?: number
+          created_at?: string | null
+          id?: number
+          month?: string
+          total_fees?: number
+          total_revenue?: number
+          total_sales?: number
+          year?: number
+        }
+        Relationships: []
+      }
       pedidosPanel: {
         Row: {
           data: string
@@ -422,6 +479,18 @@ export type Database = {
       }
     }
     Views: {
+      monthly_sales_summary: {
+        Row: {
+          average_sale: number | null
+          created_at: string | null
+          month: string | null
+          total_fees: number | null
+          total_revenue: number | null
+          total_sales: number | null
+          year: number | null
+        }
+        Relationships: []
+      }
       subscription_statistics: {
         Row: {
           active_subscriptions: number | null
@@ -444,7 +513,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      update_monthly_sales_history: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
