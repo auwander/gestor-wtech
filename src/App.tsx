@@ -1,99 +1,94 @@
-import { useState, useEffect } from "react";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
-import { supabase } from "./integrations/supabase/client";
-import { Toaster } from "sonner";
-import Login from "./pages/Login";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
-import Statistics from "./pages/Statistics";
 import Subscriptions from "./pages/Subscriptions";
+import Statistics from "./pages/Statistics";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children, session }) => {
-  if (!session) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
-
-function App() {
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
+    // Check current session on mount
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    checkSession();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="h-8 w-32 bg-muted rounded"></div>
-          <div className="text-muted-foreground">Carregando...</div>
-        </div>
-      </div>
-    );
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>;
   }
 
-  const router = createBrowserRouter([
-    {
-      path: "/login",
-      element: session ? <Navigate to="/" replace /> : <Login />,
-    },
-    {
-      path: "/",
-      element: (
-        <ProtectedRoute session={session}>
-          <Dashboard />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/home",
-      element: (
-        <ProtectedRoute session={session}>
-          <Index />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/statistics",
-      element: (
-        <ProtectedRoute session={session}>
-          <Statistics />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/subscriptions",
-      element: (
-        <ProtectedRoute session={session}>
-          <Subscriptions />
-        </ProtectedRoute>
-      ),
-    },
-  ]);
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" expand={true} richColors />
-    </QueryClientProvider>
-  );
-}
+  return <>{children}</>;
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/subscriptions"
+            element={
+              <ProtectedRoute>
+                <Subscriptions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/statistics"
+            element={
+              <ProtectedRoute>
+                <Statistics />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
