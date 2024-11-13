@@ -15,18 +15,29 @@ export default function Dashboard() {
 
   useEffect(() => {
     const getUserEmail = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUserEmail(user?.email || null);
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) {
+          if (error.message.includes('session_not_found')) {
+            navigate("/login");
+            return;
+          }
+          throw error;
+        }
+        setUserEmail(user?.email || null);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        navigate("/login");
+      }
     };
     getUserEmail();
-  }, []);
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
         if (error.message.includes('session_not_found')) {
-          // If session is not found, we can still redirect the user
           toast.success("Logout realizado com sucesso");
           navigate("/login");
           return;
@@ -38,7 +49,6 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error("Erro no logout:", error);
-      // Even if there's an error, we should redirect the user
       toast.success("Logout realizado com sucesso");
       navigate("/login");
     }
@@ -51,24 +61,20 @@ export default function Dashboard() {
         .from("client_subscriptions")
         .select("id", { count: "exact", head: true });
 
-      // Get all subscriptions to check due dates
       const { data: subscriptions } = await supabase
         .from("client_subscriptions")
         .select("due_date, amount, payment_status");
 
-      // Count overdue subscriptions (due_date is before today, not including today)
       const overdueCount = subscriptions?.filter(sub => {
         const dueDate = startOfDay(parseISO(sub.due_date));
         return isBefore(dueDate, today) && sub.payment_status !== 'inactive';
       }).length || 0;
 
-      // Count subscriptions due today (exact match with today's date)
       const dueTodayCount = subscriptions?.filter(sub => {
         const dueDate = startOfDay(parseISO(sub.due_date));
         return isEqual(dueDate, today);
       }).length || 0;
 
-      // Calculate monthly revenue from active subscriptions
       const monthlyRevenue = subscriptions?.reduce((acc, curr) => {
         if (curr.payment_status === 'active') {
           return acc + Number(curr.amount);
