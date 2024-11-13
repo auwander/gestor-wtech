@@ -50,7 +50,6 @@ export function SubscriptionsList({ filter, searchTerm }: SubscriptionsListProps
         .eq("company", profile.company)
         .order("due_date", { ascending: true });
 
-      // Apply search filter if searchTerm exists
       if (searchTerm) {
         query = query.or(`name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,account.ilike.%${searchTerm}%`);
       }
@@ -126,7 +125,6 @@ export function SubscriptionsList({ filter, searchTerm }: SubscriptionsListProps
             <TableHead>App</TableHead>
             <TableHead>Valor</TableHead>
             <TableHead>Vencimento</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
