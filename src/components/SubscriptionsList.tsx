@@ -17,6 +17,23 @@ interface SubscriptionsListProps {
   filter?: string | null;
 }
 
+// Move compareDates to module scope so it can be used by all functions
+const compareDates = (dateStr: string) => {
+  // Criar uma data de referência (hoje) no fuso horário local, início do dia
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Converter a string de data para objeto Date no fuso horário local
+  const date = new Date(dateStr + 'T00:00:00');
+  const daysDifference = differenceInDays(today, date);
+  return { 
+    date, 
+    isBeforeToday: isBefore(date, today),
+    isToday: isEqual(date, today),
+    daysDifference
+  };
+};
+
 export function SubscriptionsList({ filter }: SubscriptionsListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -46,22 +63,6 @@ export function SubscriptionsList({ filter }: SubscriptionsListProps) {
       }
 
       const subscriptionsData = data as Subscription[];
-
-      // Criar uma data de referência (hoje) no fuso horário local, início do dia
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const compareDates = (dateStr: string) => {
-        // Converter a string de data para objeto Date no fuso horário local
-        const date = new Date(dateStr + 'T00:00:00');
-        const daysDifference = differenceInDays(today, date);
-        return { 
-          date, 
-          isBeforeToday: isBefore(date, today),
-          isToday: isEqual(date, today),
-          daysDifference
-        };
-      };
 
       switch (filter) {
         case 'inactive':
