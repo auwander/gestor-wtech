@@ -21,7 +21,7 @@ const Subscriptions = () => {
             </Button>
           </Link>
           <h1 className="text-3xl font-bold">
-            {filter === 'inactive' ? 'Clientes Inadimplentes' : 'Meus clientes'}
+            {filter === 'inactive' ? 'Clientes Inadimplentes' : 'Lista de Assinaturas'}
           </h1>
         </div>
         <Button

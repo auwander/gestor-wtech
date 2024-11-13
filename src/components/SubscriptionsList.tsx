@@ -50,6 +50,7 @@ export function SubscriptionsList({ filter, searchTerm }: SubscriptionsListProps
         .eq("company", profile.company)
         .order("due_date", { ascending: true });
 
+      // Apply search filter if searchTerm exists
       if (searchTerm) {
         query = query.or(`name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,account.ilike.%${searchTerm}%`);
       }
@@ -104,32 +105,29 @@ export function SubscriptionsList({ filter, searchTerm }: SubscriptionsListProps
     const { isBeforeToday, isToday } = compareDates(dueDate);
     
     if (isBeforeToday) {
-      return "bg-red-50 hover:bg-red-100 transition-colors";
+      return "bg-red-100";
     }
     if (isToday) {
-      return "bg-blue-50 hover:bg-blue-100 transition-colors";
+      return "bg-blue-100";
     }
-    return "bg-emerald-50 hover:bg-emerald-100 transition-colors";
+    return "bg-green-100";
   };
 
-  if (isLoading) return (
-    <div className="flex justify-center items-center p-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-    </div>
-  );
+  if (isLoading) return <div>Carregando...</div>;
 
   return (
-    <div className="rounded-xl border border-purple-200 bg-white shadow-sm overflow-hidden">
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow className="bg-gradient-to-r from-purple-50 to-pink-50">
-            <TableHead className="font-semibold text-purple-900">Nome</TableHead>
-            <TableHead className="font-semibold text-purple-900">Telefone</TableHead>
-            <TableHead className="font-semibold text-purple-900">Conta</TableHead>
-            <TableHead className="font-semibold text-purple-900">App</TableHead>
-            <TableHead className="font-semibold text-purple-900">Valor</TableHead>
-            <TableHead className="font-semibold text-purple-900">Vencimento</TableHead>
-            <TableHead className="font-semibold text-purple-900">Ações</TableHead>
+          <TableRow>
+            <TableHead>Nome</TableHead>
+            <TableHead>Telefone</TableHead>
+            <TableHead>Conta</TableHead>
+            <TableHead>App</TableHead>
+            <TableHead>Valor</TableHead>
+            <TableHead>Vencimento</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
