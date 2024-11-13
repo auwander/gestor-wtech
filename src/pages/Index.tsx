@@ -26,7 +26,7 @@ const Index = () => {
       
       <div className="grid gap-8 md:grid-cols-2">
         <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
-          <h2 className="text-xl font-semibold mb-6 text-purple-800">Nova Assinatura</h2>
+          <h2 className="text-xl font-semibold mb-6 text-purple-800">Novo Cadastro</h2>
           <SubscriptionForm />
         </div>
       </div>
