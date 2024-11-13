@@ -11,4 +11,5 @@ export type Subscription = {
   payment_status?: string;
   company?: string;
   account?: string;
+  subscription_duration?: number;
 };

@@ -35,6 +35,7 @@ export function SubscriptionRow({ subscription, onDelete, className }: Subscript
       <TableCell>{subscription.app}</TableCell>
       <TableCell>R$ {subscription.amount.toFixed(2)}</TableCell>
       <TableCell>{formatDate(subscription.due_date)}</TableCell>
+      <TableCell>{subscription.subscription_duration || 30} dias</TableCell>
       <TableCell className="flex items-center gap-2">
         <EditSubscriptionDialog subscription={subscription} />
         <AlertDialog>

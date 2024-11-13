@@ -129,6 +129,7 @@ export function SubscriptionsList({ filter, searchTerm }: SubscriptionsListProps
             <TableHead className="font-semibold text-purple-900">App</TableHead>
             <TableHead className="font-semibold text-purple-900">Valor</TableHead>
             <TableHead className="font-semibold text-purple-900">Vencimento</TableHead>
+            <TableHead className="font-semibold text-purple-900">Duração</TableHead>
             <TableHead className="font-semibold text-purple-900">Ações</TableHead>
           </TableRow>
         </TableHeader>
