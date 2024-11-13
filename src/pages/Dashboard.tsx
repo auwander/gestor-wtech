@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const today = startOfDay(new Date()); // Use startOfDay to compare dates properly
+  const today = startOfDay(new Date());
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,10 +22,23 @@ export default function Dashboard() {
   }, []);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error("Erro ao fazer logout");
-    } else {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        if (error.message.includes('session_not_found')) {
+          // If session is not found, we can still redirect the user
+          toast.success("Logout realizado com sucesso");
+          navigate("/login");
+          return;
+        }
+        toast.error("Erro ao fazer logout: " + error.message);
+      } else {
+        toast.success("Logout realizado com sucesso");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Erro no logout:", error);
+      // Even if there's an error, we should redirect the user
       toast.success("Logout realizado com sucesso");
       navigate("/login");
     }
