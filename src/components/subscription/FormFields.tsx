@@ -1,8 +1,14 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { APP_OPTIONS } from "./schema";
 import { UseFormReturn } from "react-hook-form";
 
@@ -12,15 +18,15 @@ interface FormFieldsProps {
 
 export function FormFields({ form }: FormFieldsProps) {
   return (
-    <>
+    <div className="space-y-4">
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome</FormLabel>
+            <FormLabel>Nome do Cliente</FormLabel>
             <FormControl>
-              <Input placeholder="Nome do cliente" {...field} />
+              <Input placeholder="Digite o nome" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -34,21 +40,7 @@ export function FormFields({ form }: FormFieldsProps) {
           <FormItem>
             <FormLabel>Telefone</FormLabel>
             <FormControl>
-              <Input placeholder="(00) 00000-0000" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="account"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Conta</FormLabel>
-            <FormControl>
-              <Input placeholder="Conta do cliente" {...field} />
+              <Input placeholder="Digite o telefone" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -61,13 +53,7 @@ export function FormFields({ form }: FormFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>App</FormLabel>
-            <Select 
-              onValueChange={(value) => {
-                const isCombo = form.getValues("is_combo");
-                field.onChange(isCombo ? `${value} Eppi` : value);
-              }} 
-              value={field.value?.replace(" Eppi", "")}
-            >
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um app" />
@@ -93,7 +79,7 @@ export function FormFields({ form }: FormFieldsProps) {
           <FormItem>
             <FormLabel>Valor</FormLabel>
             <FormControl>
-              <Input type="number" step="0.01" placeholder="0.00" {...field} />
+              <Input placeholder="Digite o valor" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -107,14 +93,7 @@ export function FormFields({ form }: FormFieldsProps) {
           <FormItem>
             <FormLabel>Data de Vencimento</FormLabel>
             <FormControl>
-              <Input 
-                type="date" 
-                {...field}
-                onChange={(e) => {
-                  const date = e.target.value;
-                  field.onChange(date);
-                }}
-              />
+              <Input type="date" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -146,27 +125,37 @@ export function FormFields({ form }: FormFieldsProps) {
 
       <FormField
         control={form.control}
+        name="account"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Conta</FormLabel>
+            <FormControl>
+              <Input placeholder="Digite a conta (opcional)" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
         name="is_combo"
         render={({ field }) => (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
             <FormControl>
               <Checkbox
                 checked={field.value}
-                onCheckedChange={(checked) => {
-                  field.onChange(checked);
-                  const currentApp = form.getValues("app")?.replace(" Eppi", "");
-                  if (currentApp) {
-                    form.setValue("app", checked ? `${currentApp} Eppi` : currentApp);
-                  }
-                }}
+                onCheckedChange={field.onChange}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel>Combo?</FormLabel>
+              <FormLabel>
+                Combo
+              </FormLabel>
             </div>
           </FormItem>
         )}
       />
-    </>
+    </div>
   );
 }

@@ -138,6 +138,7 @@ export type Database = {
           name: string
           payment_status: string | null
           phone: string
+          subscription_duration: number | null
         }
         Insert: {
           account?: string | null
@@ -153,6 +154,7 @@ export type Database = {
           name: string
           payment_status?: string | null
           phone: string
+          subscription_duration?: number | null
         }
         Update: {
           account?: string | null
@@ -168,6 +170,7 @@ export type Database = {
           name?: string
           payment_status?: string | null
           phone?: string
+          subscription_duration?: number | null
         }
         Relationships: []
       }
