@@ -11,6 +11,7 @@ export default function Login() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
+        toast.success('Login realizado com sucesso!');
         navigate("/");
       }
       if (event === 'USER_UPDATED' && session) {
@@ -54,7 +55,6 @@ export default function Login() {
                   password_label: "Senha",
                   button_label: "Entrar",
                   loading_button_label: "Entrando...",
-                  social_provider_text: "Continuar com {{provider}}",
                   link_text: "Já tem uma conta? Entre"
                 },
                 sign_up: {
@@ -62,7 +62,6 @@ export default function Login() {
                   password_label: "Senha",
                   button_label: "Criar conta",
                   loading_button_label: "Criando conta...",
-                  social_provider_text: "Continuar com {{provider}}",
                   link_text: "Não tem uma conta? Cadastre-se"
                 }
               }
