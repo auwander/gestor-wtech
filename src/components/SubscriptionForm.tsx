@@ -19,6 +19,7 @@ export function SubscriptionForm() {
     defaultValues: {
       is_combo: false,
       account: "",
+      subscription_duration: 30,
     },
   });
 
@@ -36,9 +37,6 @@ export function SubscriptionForm() {
           return;
         }
 
-        console.log("Current user:", user); // Debug log
-
-        // Primeiro, tentar obter o perfil existente
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('company')
@@ -46,11 +44,7 @@ export function SubscriptionForm() {
           .single();
 
         if (profileError) {
-          console.log("Profile error:", profileError); // Debug log
-          
-          // Se o perfil não existir, criar um novo
           const companyName = user.email?.split('@')[0] || 'default-company';
-          console.log("Attempting to create profile with company:", companyName); // Debug log
           
           const { data: newProfile, error: insertError } = await supabase
             .from('profiles')
@@ -71,11 +65,9 @@ export function SubscriptionForm() {
           }
 
           if (newProfile) {
-            console.log("New profile created:", newProfile); // Debug log
             setUserCompany(newProfile.company);
           }
         } else if (profile) {
-          console.log("Existing profile found:", profile); // Debug log
           setUserCompany(profile.company);
         }
       } catch (error) {
@@ -101,18 +93,17 @@ export function SubscriptionForm() {
     }
 
     try {
-      const dueDate = values.due_date;
-
       const { error } = await supabase.from("client_subscriptions").insert({
         name: values.name,
         phone: values.phone,
         app: values.app,
         amount: parseFloat(values.amount),
-        due_date: dueDate,
+        due_date: values.due_date,
         is_combo: values.is_combo,
         combo_app: values.is_combo ? "Eppi" : null,
         company: userCompany,
         account: values.account || null,
+        subscription_duration: values.subscription_duration,
       });
 
       if (error) throw error;
@@ -131,6 +122,7 @@ export function SubscriptionForm() {
         due_date: "",
         is_combo: false,
         account: "",
+        subscription_duration: 30,
       });
     } catch (error) {
       console.error("Error details:", error);

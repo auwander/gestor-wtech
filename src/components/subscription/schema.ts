@@ -8,6 +8,7 @@ export const formSchema = z.object({
   due_date: z.string().min(1, "Selecione uma data"),
   is_combo: z.boolean().default(false),
   account: z.string().optional(),
+  subscription_duration: z.number().default(30),
 });
 
 export const APP_OPTIONS = [

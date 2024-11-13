@@ -2,6 +2,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { APP_OPTIONS } from "./schema";
 import { UseFormReturn } from "react-hook-form";
 
@@ -116,6 +117,29 @@ export function FormFields({ form }: FormFieldsProps) {
               />
             </FormControl>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="subscription_duration"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <FormLabel className="text-base">Duração da Assinatura</FormLabel>
+              <div className="text-sm text-muted-foreground">
+                {field.value === 30 ? "30 dias" : "365 dias"}
+              </div>
+            </div>
+            <FormControl>
+              <Switch
+                checked={field.value === 365}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked ? 365 : 30);
+                }}
+              />
+            </FormControl>
           </FormItem>
         )}
       />
