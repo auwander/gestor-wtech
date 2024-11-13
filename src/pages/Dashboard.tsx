@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { format, isBefore, isEqual, parseISO } from "date-fns";
+import { format, isBefore, isEqual, parseISO, startOfDay } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, Users, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const today = new Date();
+  const today = startOfDay(new Date()); // Use startOfDay to compare dates properly
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,19 +43,16 @@ export default function Dashboard() {
         .from("client_subscriptions")
         .select("due_date, amount, payment_status");
 
-      // Count overdue subscriptions (due_date is before today)
+      // Count overdue subscriptions (due_date is before today, not including today)
       const overdueCount = subscriptions?.filter(sub => {
-        const dueDate = parseISO(sub.due_date);
+        const dueDate = startOfDay(parseISO(sub.due_date));
         return isBefore(dueDate, today) && sub.payment_status !== 'inactive';
       }).length || 0;
 
       // Count subscriptions due today (exact match with today's date)
       const dueTodayCount = subscriptions?.filter(sub => {
-        const dueDate = parseISO(sub.due_date);
-        return isEqual(
-          new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()),
-          new Date(today.getFullYear(), today.getMonth(), today.getDate())
-        );
+        const dueDate = startOfDay(parseISO(sub.due_date));
+        return isEqual(dueDate, today);
       }).length || 0;
 
       // Calculate monthly revenue from active subscriptions
@@ -173,4 +170,3 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
