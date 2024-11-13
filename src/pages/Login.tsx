@@ -48,6 +48,7 @@ export default function Login() {
               },
             }}
             theme="light"
+            providers={[]}
             localization={{
               variables: {
                 sign_in: {
