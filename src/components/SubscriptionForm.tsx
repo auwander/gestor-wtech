@@ -89,11 +89,12 @@ export function SubscriptionForm() {
     }
 
     try {
-      // Criar a primeira assinatura com o app principal
-      const { error: mainError } = await supabase.from("client_subscriptions").insert({
+      const appName = values.is_combo ? `${values.app} Eppi` : values.app;
+      
+      const { error } = await supabase.from("client_subscriptions").insert({
         name: values.name,
         phone: values.phone,
-        app: values.app,
+        app: appName,
         amount: parseFloat(values.amount),
         due_date: values.due_date,
         is_combo: values.is_combo,
@@ -103,25 +104,7 @@ export function SubscriptionForm() {
         subscription_duration: values.subscription_duration,
       });
 
-      if (mainError) throw mainError;
-
-      // Se for combo, criar uma segunda assinatura para o Eppi
-      if (values.is_combo) {
-        const { error: comboError } = await supabase.from("client_subscriptions").insert({
-          name: values.name,
-          phone: values.phone,
-          app: "Eppi",
-          amount: 0, // Valor zero pois está incluso no combo
-          due_date: values.due_date,
-          is_combo: true,
-          combo_app: values.app, // App principal como referência
-          company: userCompany,
-          account: values.account || null,
-          subscription_duration: values.subscription_duration,
-        });
-
-        if (comboError) throw comboError;
-      }
+      if (error) throw error;
 
       toast({
         title: "Assinatura registrada com sucesso!",
