@@ -28,12 +28,15 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Extract base app name if it's a combo
+  const baseApp = subscription.is_combo ? subscription.app.replace(" Eppi", "") : subscription.app;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: subscription.name,
       phone: subscription.phone,
-      app: subscription.app,
+      app: baseApp,
       amount: subscription.amount.toString(),
       due_date: subscription.due_date,
       is_combo: subscription.is_combo,
@@ -44,10 +47,12 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      const appName = values.is_combo ? `${values.app} Eppi` : values.app;
+
       await updateSubscription(subscription.id, {
         name: values.name,
         phone: values.phone,
-        app: values.app,
+        app: appName,
         amount: parseFloat(values.amount),
         due_date: values.due_date,
         is_combo: values.is_combo,
@@ -60,7 +65,9 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
       
       toast({
         title: "Cliente atualizado com sucesso!",
-        description: "Os dados foram atualizados no sistema.",
+        description: values.is_combo 
+          ? "Os dados foram atualizados com combo Eppi."
+          : "Os dados foram atualizados no sistema.",
       });
 
       setOpen(false);
