@@ -39,7 +39,7 @@ export function EditSubscriptionDialog({ subscription }: EditSubscriptionDialogP
       app: baseApp,
       amount: subscription.amount.toString(),
       due_date: subscription.due_date,
-      is_combo: subscription.is_combo,
+      is_combo: Boolean(subscription.is_combo), // Explicitly convert to boolean
       account: subscription.account || "",
       subscription_duration: subscription.subscription_duration || 30,
     },
