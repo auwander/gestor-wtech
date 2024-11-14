@@ -11,38 +11,46 @@ export default function Login() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    // Check current session
-    const checkSession = async () => {
+    let mounted = true;
+
+    async function getInitialSession() {
       try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        setSession(currentSession);
-        if (currentSession) {
-          navigate("/");
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (mounted) {
+          setSession(currentSession);
+          if (currentSession) {
+            navigate("/");
+          }
         }
       } catch (error) {
-        console.error("Error checking session:", error);
+        console.error("Error getting initial session:", error);
       }
-    };
+    }
 
-    checkSession();
+    getInitialSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      setSession(currentSession);
-      
-      if (event === 'SIGNED_IN' && currentSession) {
-        toast.success('Login realizado com sucesso!');
-        navigate("/");
-      }
-      if (event === 'SIGNED_OUT') {
-        navigate("/login");
+      if (mounted) {
+        setSession(currentSession);
+        
+        if (event === 'SIGNED_IN' && currentSession) {
+          toast.success('Login realizado com sucesso!');
+          navigate("/");
+        }
+        if (event === 'SIGNED_OUT') {
+          navigate("/login");
+        }
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
-  // If already logged in, redirect to home
   if (session) {
     return null;
   }
