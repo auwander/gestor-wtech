@@ -11,20 +11,26 @@ export default function Login() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        navigate("/");
+    // Check current session
+    const checkSession = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        setSession(currentSession);
+        if (currentSession) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
       }
-    });
+    };
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      setSession(currentSession);
       
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_IN' && currentSession) {
         toast.success('Login realizado com sucesso!');
         navigate("/");
       }
