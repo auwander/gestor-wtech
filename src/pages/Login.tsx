@@ -1,59 +1,26 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { toast } from "sonner";
-import { Session } from "@supabase/supabase-js";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    let mounted = true;
-
-    async function getInitialSession() {
-      try {
-        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        
-        if (mounted) {
-          setSession(currentSession);
-          if (currentSession) {
-            navigate("/");
-          }
-        }
-      } catch (error) {
-        console.error("Error getting initial session:", error);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        toast.success('Login realizado com sucesso!');
+        navigate("/");
       }
-    }
-
-    getInitialSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      if (mounted) {
-        setSession(currentSession);
-        
-        if (event === 'SIGNED_IN' && currentSession) {
-          toast.success('Login realizado com sucesso!');
-          navigate("/");
-        }
-        if (event === 'SIGNED_OUT') {
-          navigate("/login");
-        }
+      if (event === 'USER_UPDATED' && session) {
+        navigate("/");
       }
     });
 
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [navigate]);
-
-  if (session) {
-    return null;
-  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-white p-4">

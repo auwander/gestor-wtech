@@ -25,14 +25,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     async function getSession() {
       try {
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) throw error;
         
+        if (error) {
+          console.error("Error getting session:", error);
+          if (mounted) {
+            setSession(null);
+            setLoading(false);
+          }
+          return;
+        }
+
         if (mounted) {
           setSession(currentSession);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error getting session:", error);
+        console.error("Error in getSession:", error);
         if (mounted) {
           setSession(null);
           setLoading(false);
@@ -42,7 +50,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     getSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (mounted) {
         setSession(session);
         setLoading(false);
