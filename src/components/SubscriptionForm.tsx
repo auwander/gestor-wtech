@@ -46,13 +46,11 @@ export function SubscriptionForm() {
         if (profileError) {
           const companyName = user.email?.split('@')[0] || 'default-company';
           
-          const { data: newProfile, error: insertError } = await supabase
+          const { error: insertError } = await supabase
             .from('profiles')
             .insert([
               { id: user.id, company: companyName }
-            ])
-            .select()
-            .single();
+            ]);
 
           if (insertError) {
             console.error("Error creating profile:", insertError);
@@ -64,9 +62,7 @@ export function SubscriptionForm() {
             return;
           }
 
-          if (newProfile) {
-            setUserCompany(newProfile.company);
-          }
+          setUserCompany(companyName);
         } else if (profile) {
           setUserCompany(profile.company);
         }
