@@ -1,26 +1,45 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { toast } from "sonner";
+import { Session } from "@supabase/supabase-js";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        navigate("/");
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      
       if (event === 'SIGNED_IN' && session) {
         toast.success('Login realizado com sucesso!');
         navigate("/");
       }
-      if (event === 'USER_UPDATED' && session) {
-        navigate("/");
+      if (event === 'SIGNED_OUT') {
+        navigate("/login");
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  // If already logged in, redirect to home
+  if (session) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-white p-4">
