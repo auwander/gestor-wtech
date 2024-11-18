@@ -12,6 +12,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const today = startOfDay(new Date());
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userCompany, setUserCompany] = useState<string | null>(null);
 
   useEffect(() => {
     const getUserEmail = async () => {
@@ -25,6 +26,24 @@ export default function Dashboard() {
           throw error;
         }
         setUserEmail(user?.email || null);
+
+        // Get user's company
+        if (user) {
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('company')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError) {
+            console.error("Error fetching profile:", profileError);
+            return;
+          }
+
+          if (profileData) {
+            setUserCompany(profileData.company);
+          }
+        }
       } catch (error) {
         console.error("Error fetching user:", error);
         navigate("/login");
@@ -55,15 +74,19 @@ export default function Dashboard() {
   };
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["dashboard-stats"],
+    queryKey: ["dashboard-stats", userCompany],
     queryFn: async () => {
+      if (!userCompany) return null;
+
       const { data: allClients, count: totalCount } = await supabase
         .from("client_subscriptions")
-        .select("id", { count: "exact", head: true });
+        .select("id", { count: "exact", head: true })
+        .eq('company', userCompany);
 
       const { data: subscriptions } = await supabase
         .from("client_subscriptions")
-        .select("due_date, amount, payment_status");
+        .select("due_date, amount, payment_status")
+        .eq('company', userCompany);
 
       const overdueCount = subscriptions?.filter(sub => {
         const dueDate = startOfDay(parseISO(sub.due_date));
@@ -89,6 +112,7 @@ export default function Dashboard() {
         monthlyRevenue: monthlyRevenue,
       };
     },
+    enabled: !!userCompany,
   });
 
   if (isLoading) return <div>Carregando...</div>;
@@ -101,6 +125,11 @@ export default function Dashboard() {
           {userEmail && (
             <p className="text-sm text-muted-foreground">
               Logado como: {userEmail}
+            </p>
+          )}
+          {userCompany && (
+            <p className="text-sm text-muted-foreground">
+              Empresa: {userCompany}
             </p>
           )}
         </div>
@@ -142,7 +171,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold">{stats?.totalClients}</div>
+            <div className="text-4xl font-bold">{stats?.totalClients || 0}</div>
           </CardContent>
         </Card>
 
@@ -156,7 +185,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-red-500">{stats?.overdueClients}</div>
+            <div className="text-4xl font-bold text-red-500">{stats?.overdueClients || 0}</div>
           </CardContent>
         </Card>
 
@@ -170,7 +199,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
-            <div className="text-4xl font-bold text-yellow-500">{stats?.dueTodayClients}</div>
+            <div className="text-4xl font-bold text-yellow-500">{stats?.dueTodayClients || 0}</div>
           </CardContent>
         </Card>
 
@@ -182,7 +211,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="flex justify-center items-center pt-4">
             <div className="text-4xl font-bold text-green-500">
-              R$ {stats?.monthlyRevenue.toFixed(2)}
+              R$ {stats?.monthlyRevenue.toFixed(2) || "0.00"}
             </div>
           </CardContent>
         </Card>
