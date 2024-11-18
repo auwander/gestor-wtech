@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [userCompany, setUserCompany] = useState<string | null>(null);
 
   useEffect(() => {
     const checkUserAccess = async () => {
@@ -22,23 +21,22 @@ const Index = () => {
           return;
         }
 
-        // Get user's company from profiles table
-        const { data: profileData, error: profileError } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('company')
           .eq('id', user.id)
           .single();
 
-        if (profileError) {
+        if (profileError || !profile) {
           console.error("Error fetching profile:", profileError);
           toast.error("Erro ao carregar informações do perfil");
+          navigate("/login");
           return;
         }
-
-        setUserCompany(profileData?.company || null);
       } catch (error) {
         console.error("Error in checkUserAccess:", error);
         toast.error("Erro ao verificar acesso");
+        navigate("/login");
       }
     };
 
@@ -65,11 +63,9 @@ const Index = () => {
           Cadastrar Cliente
         </h1>
         
-        {userCompany && (
-          <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
-            <SubscriptionForm />
-          </div>
-        )}
+        <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+          <SubscriptionForm />
+        </div>
       </div>
     </div>
   );

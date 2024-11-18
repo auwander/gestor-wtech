@@ -7,13 +7,11 @@ import { Button } from "@/components/ui/button";
 import { formSchema } from "./subscription/schema";
 import { FormFields } from "./subscription/FormFields";
 import type { z } from "zod";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function SubscriptionForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [userCompany, setUserCompany] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -23,72 +21,34 @@ export function SubscriptionForm() {
     },
   });
 
-  useEffect(() => {
-    async function getUserCompany() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast({
-            variant: "destructive",
-            title: "Erro de autenticação",
-            description: "Por favor, faça login novamente.",
-          });
-          navigate('/login');
-          return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('company')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError) {
-          const companyName = user.email?.split('@')[0] || 'default-company';
-          
-          const { error: insertError } = await supabase
-            .from('profiles')
-            .insert([
-              { id: user.id, company: companyName }
-            ]);
-
-          if (insertError) {
-            console.error("Error creating profile:", insertError);
-            toast({
-              variant: "destructive",
-              title: "Erro ao criar perfil",
-              description: "Por favor, contate o suporte.",
-            });
-            return;
-          }
-
-          setUserCompany(companyName);
-        } else if (profile) {
-          setUserCompany(profile.company);
-        }
-      } catch (error) {
-        console.error("Error in getUserCompany:", error);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         toast({
           variant: "destructive",
-          title: "Erro ao carregar perfil",
-          description: "Por favor, tente novamente mais tarde.",
+          title: "Erro de autenticação",
+          description: "Por favor, faça login novamente.",
         });
+        navigate('/login');
+        return;
       }
-    }
-    getUserCompany();
-  }, [toast, navigate]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!userCompany) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao registrar assinatura",
-        description: "Empresa não encontrada para o usuário.",
-      });
-      return;
-    }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('company')
+        .eq('id', user.id)
+        .single();
 
-    try {
+      if (!profile?.company) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao registrar assinatura",
+          description: "Empresa não encontrada para o usuário.",
+        });
+        return;
+      }
+
       const appName = values.is_combo ? `${values.app} Eppi` : values.app;
       
       const { error } = await supabase.from("client_subscriptions").insert({
@@ -99,7 +59,7 @@ export function SubscriptionForm() {
         due_date: values.due_date,
         is_combo: values.is_combo,
         combo_app: values.is_combo ? "Eppi" : null,
-        company: userCompany,
+        company: profile.company,
         account: values.account || null,
         subscription_duration: values.subscription_duration,
       });
