@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      august_sales_stats: {
+        Row: {
+          company: string | null
+          company_fee: number | null
+          company_sales: number | null
+          created_at: string | null
+          id: number
+          total_fee: number
+          total_sales: number
+        }
+        Insert: {
+          company?: string | null
+          company_fee?: number | null
+          company_sales?: number | null
+          created_at?: string | null
+          id?: number
+          total_fee: number
+          total_sales: number
+        }
+        Update: {
+          company?: string | null
+          company_fee?: number | null
+          company_sales?: number | null
+          created_at?: string | null
+          id?: number
+          total_fee?: number
+          total_sales?: number
+        }
+        Relationships: []
+      }
       botRecarga: {
         Row: {
           account: string | null
@@ -516,6 +546,10 @@ export type Database = {
       }
     }
     Functions: {
+      update_august_sales_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_monthly_sales_history: {
         Args: Record<PropertyKey, never>
         Returns: undefined

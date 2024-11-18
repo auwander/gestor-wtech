@@ -2,8 +2,49 @@ import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [userCompany, setUserCompany] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkUserAccess = async () => {
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          toast.error("Você precisa estar logado para acessar esta página");
+          navigate("/login");
+          return;
+        }
+
+        // Get user's company from profiles table
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('company')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+          toast.error("Erro ao carregar informações do perfil");
+          return;
+        }
+
+        setUserCompany(profileData?.company || null);
+      } catch (error) {
+        console.error("Error in checkUserAccess:", error);
+        toast.error("Erro ao verificar acesso");
+      }
+    };
+
+    checkUserAccess();
+  }, [navigate]);
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-8">
@@ -24,9 +65,11 @@ const Index = () => {
           Cadastrar Cliente
         </h1>
         
-        <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
-          <SubscriptionForm />
-        </div>
+        {userCompany && (
+          <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+            <SubscriptionForm />
+          </div>
+        )}
       </div>
     </div>
   );
