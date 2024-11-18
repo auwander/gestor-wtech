@@ -34,13 +34,13 @@ export function SubscriptionForm() {
         return;
       }
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('company')
         .eq('id', user.id)
         .single();
 
-      if (!profile?.company) {
+      if (profileError || !profile?.company) {
         toast({
           variant: "destructive",
           title: "Erro ao registrar assinatura",

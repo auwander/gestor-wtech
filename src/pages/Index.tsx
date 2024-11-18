@@ -2,7 +2,7 @@ import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -27,7 +27,7 @@ const Index = () => {
           .eq('id', user.id)
           .single();
 
-        if (profileError || !profile) {
+        if (profileError || !profile?.company) {
           console.error("Error fetching profile:", profileError);
           toast.error("Erro ao carregar informações do perfil");
           navigate("/login");
