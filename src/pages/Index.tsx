@@ -100,6 +100,9 @@ const Index = () => {
             <p className="text-gray-700">
               Empresa: <span className="font-medium">{profile.company}</span>
             </p>
+            <p className="text-gray-700 mt-2">
+              Total de Clientes: <span className="font-medium">{subscriptions?.length || 0}</span>
+            </p>
           </div>
         )}
         
