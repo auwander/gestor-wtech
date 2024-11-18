@@ -1,13 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis } from "recharts";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import { Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { StatisticsHeader } from "@/components/statistics/StatisticsHeader";
+import { StatisticsCards } from "@/components/statistics/StatisticsCards";
+import { AppStatisticsChart } from "@/components/statistics/AppStatisticsChart";
 
 const Statistics = () => {
   const navigate = useNavigate();
@@ -29,7 +27,7 @@ const Statistics = () => {
           .eq('id', user.id)
           .single();
 
-        if (profileError || !profile) {
+        if (profileError || !profile?.company) {
           console.error("Error fetching profile:", profileError);
           toast.error("Erro ao carregar informações do perfil");
           navigate("/login");
@@ -132,101 +130,9 @@ const Statistics = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="flex items-center gap-4 mb-8">
-        <Link to="/">
-          <Button variant="outline" size="icon">
-            <Home className="h-4 w-4" />
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-bold">Estatísticas de Assinaturas</h1>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-3 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Assinaturas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.total_subscriptions || 0}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Assinaturas Ativas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.active_subscriptions || 0}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Receita Total
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              R$ {stats?.total_revenue?.toFixed(2) || '0.00'}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Assinaturas por App</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ChartContainer
-              config={{
-                active: { theme: { light: "#22c55e", dark: "#22c55e" } },
-                total: { theme: { light: "#64748b", dark: "#64748b" } },
-              }}
-            >
-              <BarChart data={appStats || []}>
-                <XAxis dataKey="app" />
-                <YAxis />
-                <ChartTooltip />
-                <Bar dataKey="active" name="Ativas" fill="var(--color-active)" />
-                <Bar dataKey="total" name="Total" fill="var(--color-total)" />
-              </BarChart>
-            </ChartContainer>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Valor Médio das Assinaturas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              R$ {stats?.average_subscription_value?.toFixed(2) || '0.00'}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Apps
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.total_apps || 0}</div>
-          </CardContent>
-        </Card>
-      </div>
+      <StatisticsHeader />
+      <StatisticsCards stats={stats} />
+      <AppStatisticsChart appStats={appStats} />
     </div>
   );
 };
