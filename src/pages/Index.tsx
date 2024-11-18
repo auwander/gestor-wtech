@@ -2,7 +2,7 @@ import { SubscriptionForm } from "@/components/SubscriptionForm";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { Home } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -91,6 +91,17 @@ const Index = () => {
         <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center mb-8">
           Cadastrar Cliente
         </h1>
+
+        {profile && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+            <h2 className="text-lg font-semibold text-purple-900 mb-2">
+              Informações da Empresa
+            </h2>
+            <p className="text-gray-700">
+              Empresa: <span className="font-medium">{profile.company}</span>
+            </p>
+          </div>
+        )}
         
         <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
           <SubscriptionForm />
