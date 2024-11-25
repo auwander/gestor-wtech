@@ -12,6 +12,7 @@ import Subscriptions from "./pages/Subscriptions";
 import Statistics from "./pages/Statistics";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Apps from "./pages/Apps";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +119,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Statistics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/apps"
+              element={
+                <ProtectedRoute>
+                  <Apps />
                 </ProtectedRoute>
               }
             />

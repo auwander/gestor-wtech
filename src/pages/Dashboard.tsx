@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format, isBefore, isEqual, parseISO, startOfDay } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, Users, LogOut } from "lucide-react";
+import { PlusCircle, Users, LogOut, Apps } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -148,6 +148,13 @@ export default function Dashboard() {
           >
             <PlusCircle className="h-4 w-4" />
             Cadastrar Cliente
+          </Button>
+          <Button
+            onClick={() => navigate("/apps")}
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <Apps className="h-4 w-4" />
+            Cadastrar Apps
           </Button>
           <Button
             onClick={handleLogout}
