@@ -39,6 +39,36 @@ export type Database = {
         }
         Relationships: []
       }
+      balance_entries: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string | null
+          description: string | null
+          id: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          id?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          id?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       botRecarga: {
         Row: {
           account: string | null
@@ -118,6 +148,7 @@ export type Database = {
           endpoint_empresa: string | null
           id: number
           logs: string | null
+          "offline?": boolean | null
           telefone_admin: string | null
           telefone_empresa: string | null
           token_mp: string | null
@@ -132,6 +163,7 @@ export type Database = {
           endpoint_empresa?: string | null
           id: number
           logs?: string | null
+          "offline?"?: boolean | null
           telefone_admin?: string | null
           telefone_empresa?: string | null
           token_mp?: string | null
@@ -146,6 +178,7 @@ export type Database = {
           endpoint_empresa?: string | null
           id?: number
           logs?: string | null
+          "offline?"?: boolean | null
           telefone_admin?: string | null
           telefone_empresa?: string | null
           token_mp?: string | null
@@ -381,6 +414,39 @@ export type Database = {
           total_revenue?: number
           total_sales?: number
           year?: number
+        }
+        Relationships: []
+      }
+      my_apps: {
+        Row: {
+          app: string | null
+          categoria: string | null
+          created_at: string
+          descricao: string | null
+          empresa: string | null
+          id: number
+          plano: string | null
+          preco: number | null
+        }
+        Insert: {
+          app?: string | null
+          categoria?: string | null
+          created_at?: string
+          descricao?: string | null
+          empresa?: string | null
+          id?: number
+          plano?: string | null
+          preco?: number | null
+        }
+        Update: {
+          app?: string | null
+          categoria?: string | null
+          created_at?: string
+          descricao?: string | null
+          empresa?: string | null
+          id?: number
+          plano?: string | null
+          preco?: number | null
         }
         Relationships: []
       }
