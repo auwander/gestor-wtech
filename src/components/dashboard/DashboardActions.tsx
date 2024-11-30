@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Users, PlusCircle, Apps, Plug, LogOut } from "lucide-react";
+import { Users, PlusCircle, AppWindow, Plug, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -49,7 +49,7 @@ export const DashboardActions = () => {
         onClick={() => navigate("/apps")}
         className="w-full sm:w-auto flex items-center justify-center gap-2"
       >
-        <Apps className="h-4 w-4" />
+        <AppWindow className="h-4 w-4" />
         Cadastrar Apps
       </Button>
       <Button
