@@ -576,6 +576,27 @@ export type Database = {
         }
         Relationships: []
       }
+      "unitv-marco-recargas365": {
+        Row: {
+          codigos: string | null
+          created_at: string
+          id: number
+          usado: boolean | null
+        }
+        Insert: {
+          codigos?: string | null
+          created_at?: string
+          id?: number
+          usado?: boolean | null
+        }
+        Update: {
+          codigos?: string | null
+          created_at?: string
+          id?: number
+          usado?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       monthly_sales_summary: {

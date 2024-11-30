@@ -89,6 +89,18 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+
+<Route
+  path="/integrations"
+  element={
+    <ProtectedRoute>
+      <div className="flex items-center justify-center min-h-screen">
+        <h1 className="text-2xl font-bold">Página em construção</h1>
+      </div>
+    </ProtectedRoute>
+  }
+/>
+
             <Route path="/login" element={<Login />} />
             <Route
               path="/"
