@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PLANO_OPTIONS, CATEGORIA_OPTIONS } from "./schema";
+import { PLANO_OPTIONS, CATEGORIA_OPTIONS, APP_OPTIONS } from "./schema";
 import { UseFormReturn } from "react-hook-form";
 
 interface AppFormFieldsProps {
@@ -23,9 +23,20 @@ export function AppFormFields({ form }: AppFormFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Nome do App</FormLabel>
-            <FormControl>
-              <Input placeholder="Digite o nome do app" {...field} />
-            </FormControl>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um app" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {APP_OPTIONS.map((app) => (
+                  <SelectItem key={app.value} value={app.value}>
+                    {app.display}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}
