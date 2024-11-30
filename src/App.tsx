@@ -13,6 +13,7 @@ import Statistics from "./pages/Statistics";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Apps from "./pages/Apps";
+import { IntegrationsPage } from "./pages/IntegrationsPage";
 
 const queryClient = new QueryClient();
 
@@ -89,18 +90,14 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-
-<Route
-  path="/integrations"
-  element={
-    <ProtectedRoute>
-      <div className="flex items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold">Página em construção</h1>
-      </div>
-    </ProtectedRoute>
-  }
-/>
-
+            <Route
+              path="/integrations"
+              element={
+                <ProtectedRoute>
+                  <IntegrationsPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/login" element={<Login />} />
             <Route
               path="/"
